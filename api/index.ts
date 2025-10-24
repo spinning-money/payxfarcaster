@@ -124,7 +124,7 @@ app.get("/", (c) => {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>PAYx402 - x402 Payment</title>
-      <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%230052FF'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white' font-family='Arial Black'>💰</text></svg>">
+      <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDQvMDUvMjTvvJQy">
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
