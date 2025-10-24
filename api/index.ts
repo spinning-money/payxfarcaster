@@ -2,7 +2,6 @@ import { Hono } from "hono";
 
 // Lazy imports for Vercel optimization
 let paymentMiddleware: any;
-let Network: any;
 let facilitator: any;
 
 // Vercel optimization
@@ -15,15 +14,14 @@ async function loadDependencies() {
     const coinbaseX402 = await import("@coinbase/x402");
     
     paymentMiddleware = x402Hono.paymentMiddleware;
-    Network = x402Hono.Network || "base"; // Fallback if Network doesn't exist
     facilitator = coinbaseX402.facilitator;
   }
-  return { paymentMiddleware, Network, facilitator };
+  return { paymentMiddleware, facilitator };
 }
 
 const facilitatorUrl: string = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
 const payTo = (process.env.ADDRESS || '0xda8d766bc482a7953b72283f56c12ce00da6a86a') as `0x${string}`;
-const network = process.env.NETWORK || 'base';
+const network = 'base'; // Always use Base network
 
 const app = new Hono();
 
