@@ -42,7 +42,7 @@ app.use(
         }
       }
     },
-    facilitatorUrl ? { url: facilitatorUrl } : facilitator
+    facilitator
   )
 );
 
