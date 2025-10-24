@@ -2,6 +2,9 @@ import { Hono } from "hono";
 import { paymentMiddleware, Network } from "x402-hono";
 import { facilitator } from "@coinbase/x402";
 
+// Vercel optimization
+const isVercel = process.env.VERCEL === '1';
+
 const facilitatorUrl: string = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
 const payTo = (process.env.ADDRESS || '0xda8d766bc482a7953b72283f56c12ce00da6a86a') as `0x${string}`;
 const network: Network = (process.env.NETWORK || 'base') as Network;
@@ -97,6 +100,11 @@ app.get("/payment/100usdc", (c) => {
 
 // Simple info page with links to protected endpoints
 app.get("/", (c) => {
+  // Vercel optimization - faster response
+  if (isVercel) {
+    c.header('Cache-Control', 'public, max-age=60');
+  }
+  
   return c.html(`
     <!DOCTYPE html>
     <html lang="en">
