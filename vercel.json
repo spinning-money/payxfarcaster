@@ -1,0 +1,14 @@
+{
+  "buildCommand": "cd payx-hono && npm install && npm run build",
+  "outputDirectory": "payx-hono/dist",
+  "installCommand": "cd payx-hono && npm install",
+  "devCommand": "cd payx-hono && npm run dev",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
+  ]
+}
+

@@ -274,7 +274,17 @@ app.get("/", (c) => {
   `);
 });
 
-serve({
-  fetch: app.fetch,
-  port: 3000
-});
+// Start server (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  serve({
+    fetch: app.fetch,
+    port: 3000
+  });
+  
+  console.log(`✅ Server running on http://localhost:3000`);
+  console.log(`💰 Receiver: ${payTo}`);
+  console.log(`🌐 Network: ${network}`);
+}
+
+// Export app for Vercel
+export default app;
