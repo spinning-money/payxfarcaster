@@ -25,8 +25,13 @@ const network = 'base'; // Always use Base network
 
 const app = new Hono();
 
-// Initialize x402 middleware lazily
+// Initialize x402 middleware at startup
 let middlewareInitialized = false;
+
+// Call initialization at the top level
+(async () => {
+  await initializeMiddleware();
+})();
 
 async function initializeMiddleware() {
   if (!middlewareInitialized) {
@@ -65,7 +70,7 @@ async function initializeMiddleware() {
             }
           }
         },
-        facilitator
+        { facilitator: { url: facilitatorUrl } }
       )
     );
     
