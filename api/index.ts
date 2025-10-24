@@ -2,10 +2,9 @@ import { Hono } from "hono";
 import { paymentMiddleware, Network, Resource } from "x402-hono";
 import { facilitator } from "@coinbase/x402";
 
-// Environment variables - Vercel automatically loads them
-const facilitatorUrl = (process.env.FACILITATOR_URL || 'https://x402.org/facilitator') as Resource;
+const facilitatorUrl: Resource = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
 const payTo = (process.env.ADDRESS || '0xda8d766bc482a7953b72283f56c12ce00da6a86a') as `0x${string}`;
-const network = (process.env.NETWORK || 'base') as Network;
+const network: Network = (process.env.NETWORK || 'base') as Network;
 
 const app = new Hono();
 
@@ -43,7 +42,7 @@ app.use(
         }
       }
     },
-    facilitator
+    facilitatorUrl ? { url: facilitatorUrl } : facilitator
   )
 );
 
