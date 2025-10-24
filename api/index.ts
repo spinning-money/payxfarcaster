@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { paymentMiddleware, Network, Resource } from "x402-hono";
+import { paymentMiddleware, Network } from "x402-hono";
 import { facilitator } from "@coinbase/x402";
 
-const facilitatorUrl: Resource = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
+const facilitatorUrl: string = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
 const payTo = (process.env.ADDRESS || '0xda8d766bc482a7953b72283f56c12ce00da6a86a') as `0x${string}`;
 const network: Network = (process.env.NETWORK || 'base') as Network;
 
