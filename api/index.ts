@@ -299,4 +299,4 @@ app.get("/", (c) => {
 });
 
 // Export for Vercel - NO app.listen() needed!
-export default app.fetch;
+export default app;
