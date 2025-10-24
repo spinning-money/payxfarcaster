@@ -10,23 +10,16 @@ const network = 'base'; // Always use Base network
 const app = new Hono();
 
 // Load x402 immediately - not lazy
-const { paymentMiddleware: x402Middleware, facilitator: cdpFacilitator } = await (async () => {
+const { paymentMiddleware: x402Middleware } = await (async () => {
   const x402Hono = await import("x402-hono");
-  const coinbaseX402 = await import("@coinbase/x402");
   return {
-    paymentMiddleware: x402Hono.paymentMiddleware,
-    facilitator: coinbaseX402.facilitator
+    paymentMiddleware: x402Hono.paymentMiddleware
   };
 })();
 
-// Check if CDP API keys are set for mainnet
-const cdpApiKeyId = process.env.CDP_API_KEY_ID;
-const cdpApiKeySecret = process.env.CDP_API_KEY_SECRET;
-
-// Use CDP facilitator for Base mainnet with API keys
-const facilitatorConfig = (network === 'base' && cdpApiKeyId && cdpApiKeySecret) 
-  ? cdpFacilitator 
-  : { url: facilitatorUrl };
+// Always use public facilitator URL for now
+// CDP API keys will be used by the facilitator when verifying
+const facilitatorConfig = { url: facilitatorUrl };
 
 // x402 Payment Middleware - MUST be before route definitions
 app.use(
