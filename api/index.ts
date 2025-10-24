@@ -227,10 +227,10 @@ app.get("/", (c) => {
     </head>
     <body>
       <div class="container">
-        <div class="social-links">
-          <a href="#" title="X (Twitter)">𝕏</a>
-          <a href="#" title="Telegram">✈</a>
-        </div>
+               <div class="social-links">
+                 <a href="https://x.com/Payx402token" title="X (Twitter)" target="_blank" rel="noopener noreferrer">𝕏</a>
+                 <a href="#" title="Telegram">✈</a>
+               </div>
         
         <h1>PAYx402</h1>
         <p class="subtitle">Buy PAYX Tokens with USDC</p>
