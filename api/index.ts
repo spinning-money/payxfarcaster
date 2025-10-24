@@ -124,7 +124,9 @@ app.get("/", (c) => {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>PAYx402 - x402 Payment</title>
-      <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDQvMDUvMjTvvJQy">
+      <link rel="icon" type="image/png" href="/favicon.png">
+      <link rel="shortcut icon" type="image/png" href="/favicon.png">
+      <link rel="apple-touch-icon" href="/favicon.png">
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
