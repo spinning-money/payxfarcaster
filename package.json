@@ -1,0 +1,11 @@
+{
+  "name": "payx402",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@coinbase/x402": "^0.6.6",
+    "hono": "^4.10.3",
+    "x402-hono": "^0.6.5"
+  }
+}
+
