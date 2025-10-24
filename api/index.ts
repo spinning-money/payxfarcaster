@@ -1,56 +1,83 @@
 import { Hono } from "hono";
-import { paymentMiddleware, Network } from "x402-hono";
-import { facilitator } from "@coinbase/x402";
+
+// Lazy imports for Vercel optimization
+let paymentMiddleware: any;
+let Network: any;
+let facilitator: any;
 
 // Vercel optimization
 const isVercel = process.env.VERCEL === '1';
 
+// Lazy load heavy dependencies
+async function loadDependencies() {
+  if (!paymentMiddleware) {
+    const x402Hono = await import("x402-hono");
+    const coinbaseX402 = await import("@coinbase/x402");
+    
+    paymentMiddleware = x402Hono.paymentMiddleware;
+    Network = x402Hono.Network;
+    facilitator = coinbaseX402.facilitator;
+  }
+  return { paymentMiddleware, Network, facilitator };
+}
+
 const facilitatorUrl: string = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
 const payTo = (process.env.ADDRESS || '0xda8d766bc482a7953b72283f56c12ce00da6a86a') as `0x${string}`;
-const network: Network = (process.env.NETWORK || 'base') as Network;
+const network = (process.env.NETWORK || 'base') as any;
 
 const app = new Hono();
 
-// x402 Payment Middleware - Multiple payment options
-app.use(
-  paymentMiddleware(
-    payTo,
-    {
-      "GET /payment/1usdc": {
-        price: "$1",
-        network: network,
-        config: {
-          description: "Pay 1 USDC → Get 5,000 PAYX tokens",
-        }
-      },
-      "GET /payment/5usdc": {
-        price: "$5",
-        network: network,
-        config: {
-          description: "Pay 5 USDC → Get 25,000 PAYX tokens",
-        }
-      },
-      "GET /payment/10usdc": {
-        price: "$10",
-        network: network,
-        config: {
-          description: "Pay 10 USDC → Get 50,000 PAYX tokens",
-        }
-      },
-      "GET /payment/100usdc": {
-        price: "$100",
-        network: network,
-        config: {
-          description: "Pay 100 USDC → Get 500,000 PAYX tokens",
-        }
-      }
-    },
-    facilitator
-  )
-);
+// Initialize x402 middleware lazily
+let middlewareInitialized = false;
+
+async function initializeMiddleware() {
+  if (!middlewareInitialized) {
+    const { paymentMiddleware, facilitator } = await loadDependencies();
+    
+    app.use(
+      paymentMiddleware(
+        payTo,
+        {
+          "GET /payment/1usdc": {
+            price: "$1",
+            network: network,
+            config: {
+              description: "Pay 1 USDC → Get 5,000 PAYX tokens",
+            }
+          },
+          "GET /payment/5usdc": {
+            price: "$5",
+            network: network,
+            config: {
+              description: "Pay 5 USDC → Get 25,000 PAYX tokens",
+            }
+          },
+          "GET /payment/10usdc": {
+            price: "$10",
+            network: network,
+            config: {
+              description: "Pay 10 USDC → Get 50,000 PAYX tokens",
+            }
+          },
+          "GET /payment/100usdc": {
+            price: "$100",
+            network: network,
+            config: {
+              description: "Pay 100 USDC → Get 500,000 PAYX tokens",
+            }
+          }
+        },
+        facilitator
+      )
+    );
+    
+    middlewareInitialized = true;
+  }
+}
 
 // Protected endpoints - Payment confirmations
-app.get("/payment/1usdc", (c) => {
+app.get("/payment/1usdc", async (c) => {
+  await initializeMiddleware();
   return c.json({
     success: true,
     message: "Payment confirmed! Your PAYX tokens will be sent to your wallet soon.",
@@ -62,7 +89,8 @@ app.get("/payment/1usdc", (c) => {
   });
 });
 
-app.get("/payment/5usdc", (c) => {
+app.get("/payment/5usdc", async (c) => {
+  await initializeMiddleware();
   return c.json({
     success: true,
     message: "Payment confirmed! Your PAYX tokens will be sent to your wallet soon.",
@@ -74,7 +102,8 @@ app.get("/payment/5usdc", (c) => {
   });
 });
 
-app.get("/payment/10usdc", (c) => {
+app.get("/payment/10usdc", async (c) => {
+  await initializeMiddleware();
   return c.json({
     success: true,
     message: "Payment confirmed! Your PAYX tokens will be sent to your wallet soon.",
@@ -86,7 +115,8 @@ app.get("/payment/10usdc", (c) => {
   });
 });
 
-app.get("/payment/100usdc", (c) => {
+app.get("/payment/100usdc", async (c) => {
+  await initializeMiddleware();
   return c.json({
     success: true,
     message: "Payment confirmed! Your PAYX tokens will be sent to your wallet soon.",
