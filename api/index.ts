@@ -262,6 +262,51 @@ app.get("/", (c) => {
           content: '🧪 TEST';
           position: absolute;
           top: -20px;
+        }
+        .web-alternative {
+          margin: 20px 0;
+          display: flex;
+          justify-content: center;
+        }
+        .web-link {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          padding: 20px 30px;
+          background: #001845;
+          border: 3px solid #0052FF;
+          border-radius: 8px;
+          text-decoration: none;
+          color: #4d94ff;
+          font-family: 'Press Start 2P', monospace;
+          transition: all 0.2s;
+          box-shadow: 0 4px 0px #003d99;
+        }
+        .web-link:hover {
+          background: #0052FF;
+          color: #fff;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 0px #003d99, 0 0 15px rgba(0, 82, 255, 0.6);
+        }
+        .web-icon {
+          font-size: 32px;
+          line-height: 1;
+        }
+        .web-text {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+        .web-title {
+          font-size: 14px;
+          font-weight: bold;
+          color: inherit;
+        }
+        .web-subtitle {
+          font-size: 10px;
+          opacity: 0.8;
+          color: inherit;
+        }
           left: 50%;
           transform: translateX(-50%);
           font-size: 9px;
@@ -464,8 +509,19 @@ app.get("/", (c) => {
                  <a href="#" title="Telegram">✈</a>
                </div>
         
-        <h1>PAYx402</h1>
+        <h1>PAYx Farcaster</h1>
         <p class="subtitle">Buy PAYX Tokens with USDC</p>
+        
+        <!-- Web Alternative Link -->
+        <div class="web-alternative">
+          <a href="https://payx402.fun/" target="_blank" class="web-link">
+            <div class="web-icon">🌐</div>
+            <div class="web-text">
+              <div class="web-title">Web Version</div>
+              <div class="web-subtitle">Full x402 Support</div>
+            </div>
+          </a>
+        </div>
         
         <a href="#" onclick="openPaymentModal('/payment/1usdc', '💰 1 USDC Payment'); return false;">1 USDC → 5,000 PAYX</a>
         <a href="#" onclick="openPaymentModal('/payment/5usdc', '💎 5 USDC Payment'); return false;">5 USDC → 25,000 PAYX</a>
