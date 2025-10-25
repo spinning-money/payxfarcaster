@@ -139,9 +139,9 @@ app.get("/payment/100usdc", (c) => {
 app.get("/.well-known/farcaster.json", (c) => {
   return c.json({
     "accountAssociation": {
-      "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MTIzNDU2Nzg5MGFiY2RlZjEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3OCJ9",
+      "header": "eyJmaWQiOjE0MDIzMDUsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhCQTE4N2ZGMzE1OWY1NjE2Yjk0Y2E2MWFBQzI5NDdhZWY0QzIwODUxIn0",
       "payload": "eyJkb21haW4iOiJ4NDAycGF5eC52ZXJjZWwuYXBwIn0",
-      "signature": "MHhh..."
+      "signature": "G/swvmmSdA3TW2fY0PSZpRZdGSGqUtZkhHicCmT4a+tw3rtcGn6TVxuUayWJgj74EQ8RnmCLe+3ODTqCWoet7Rs="
     },
     "frame": {
       "version": "1",
