@@ -6,6 +6,7 @@ const isVercel = process.env.VERCEL === '1';
 const facilitatorUrl: string = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
 const payTo = (process.env.ADDRESS || '0xda8d766bc482a7953b72283f56c12ce00da6a86a') as `0x${string}`;
 const network = 'base'; // Always use Base network
+const rpcUrl = process.env.BASE_RPC_URL || 'https://base-mainnet.g.alchemy.com/v2/demo'; // Custom RPC to avoid rate limits
 
 const app = new Hono();
 
@@ -31,6 +32,7 @@ app.use(
       "GET /payment/test": {
         price: "$0.01",
         network: network,
+        rpcUrl: rpcUrl,
         config: {
           description: "🧪 TEST: Pay 0.01 USDC → Get 50 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -38,6 +40,7 @@ app.use(
       "GET /payment/1usdc": {
         price: "$1",
         network: network,
+        rpcUrl: rpcUrl,
         config: {
           description: "💰 Pay 1 USDC → Get 5,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -45,6 +48,7 @@ app.use(
       "GET /payment/5usdc": {
         price: "$5",
         network: network,
+        rpcUrl: rpcUrl,
         config: {
           description: "💎 Pay 5 USDC → Get 25,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -52,6 +56,7 @@ app.use(
       "GET /payment/10usdc": {
         price: "$10",
         network: network,
+        rpcUrl: rpcUrl,
         config: {
           description: "🚀 Pay 10 USDC → Get 50,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -59,6 +64,7 @@ app.use(
       "GET /payment/100usdc": {
         price: "$100",
         network: network,
+        rpcUrl: rpcUrl,
         config: {
           description: "🌟 Pay 100 USDC → Get 500,000 PAYX tokens (Best Value!). Tokens will be sent to your wallet later.",
         }
@@ -129,49 +135,6 @@ app.get("/payment/100usdc", (c) => {
   });
 });
 
-// Serve static files (PAYX logo)
-app.get("/PAYX Logoo.png", (c) => {
-  return c.redirect("/public/PAYX Logoo.png");
-});
-
-app.get("/public/PAYX Logoo.png", async (c) => {
-  try {
-    const fs = await import('fs');
-    const path = await import('path');
-    const filePath = path.join(process.cwd(), 'public', 'PAYX Logoo.png');
-    const fileBuffer = fs.readFileSync(filePath);
-    
-    return new Response(fileBuffer, {
-      headers: {
-        "Content-Type": "image/png",
-        "Cache-Control": "public, max-age=31536000"
-      }
-    });
-  } catch (error) {
-    return c.text("Logo not found", 404);
-  }
-});
-
-// Serve Farcaster manifest
-app.get("/.well-known/farcaster.json", (c) => {
-  return c.json({
-    "accountAssociation": {
-      "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MTIzNDU2Nzg5MGFiY2RlZjEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3OCJ9",
-      "payload": "eyJkb21haW4iOiJwYXl4ZmFyY2FzdGVyLnZlcmNlbC5hcHAifQ",
-      "signature": "MHhh..."
-    },
-    "frame": {
-      "version": "1",
-      "name": "PAYx Farcaster",
-      "iconUrl": "https://payxfarcaster.vercel.app/PAYX Logoo.png",
-      "splashImageUrl": "https://payxfarcaster.vercel.app/PAYX Logoo.png",
-      "splashBackgroundColor": "#20B2AA",
-      "homeUrl": "https://payxfarcaster.vercel.app",
-      "webhookUrl": "https://payxfarcaster.vercel.app/api/webhook"
-    }
-  });
-});
-
 // Simple info page with links to protected endpoints
 app.get("/", (c) => {
   // Vercel optimization - faster response
@@ -180,31 +143,16 @@ app.get("/", (c) => {
   }
   
   return c.html(`
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PAYx Farcaster - Buy PAYX Tokens</title>
-        <meta name="description" content="Buy PAYX tokens with USDC using x402 protocol on Base Mainnet">
-        <link rel="icon" type="image/png" href="/favicon.png">
-        <link rel="shortcut icon" type="image/png" href="/favicon.png">
-        <link rel="apple-touch-icon" href="/favicon.png">
-        
-        <!-- Farcaster Mini App Embed Metadata -->
-        <meta property="fc:miniapp" content="vNext">
-        <meta property="fc:miniapp:image" content="https://payxfarcaster.vercel.app/PAYX Logoo.png">
-        <meta property="fc:miniapp:button:1" content="Buy PAYX Tokens">
-        <meta property="fc:miniapp:button:1:action" content="launch_frame">
-        <meta property="fc:miniapp:button:1:target" content="https://payxfarcaster.vercel.app">
-        
-        <!-- Open Graph for general sharing -->
-        <meta property="og:title" content="PAYx Farcaster - Buy PAYX Tokens">
-        <meta property="og:description" content="Buy PAYX tokens with USDC using x402 protocol on Base Mainnet">
-        <meta property="og:image" content="https://payxfarcaster.vercel.app/PAYX Logoo.png">
-        <meta property="og:url" content="https://payxfarcaster.vercel.app">
-        
-        <style>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>PAYx402 - x402 Payment</title>
+      <link rel="icon" type="image/png" href="/favicon.png">
+      <link rel="shortcut icon" type="image/png" href="/favicon.png">
+      <link rel="apple-touch-icon" href="/favicon.png">
+      <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
         * { 
@@ -510,115 +458,14 @@ app.get("/", (c) => {
       </style>
     </head>
     <body>
-      <!-- Farcaster Mini App SDK + Wallet -->
-      <script type="module">
-        import { sdk } from "https://esm.sh/@farcaster/miniapp-sdk";
-        import { createConfig, http } from "https://esm.sh/wagmi";
-        import { base } from "https://esm.sh/wagmi/chains";
-        import { farcasterMiniApp } from "https://esm.sh/@farcaster/miniapp-wagmi-connector";
-        
-        window.farcasterSDK = sdk;
-        
-        // Wagmi configuration for Farcaster wallet
-        const config = createConfig({
-          chains: [base],
-          transports: {
-            [base.id]: http(),
-          },
-          connectors: [
-            farcasterMiniApp()
-          ]
-        });
-        
-        window.wagmiConfig = config;
-        
-        // Initialize SDK when page loads
-        window.addEventListener('DOMContentLoaded', async () => {
-          try {
-            // Check if we're in Farcaster Mini App
-            const context = await sdk.context;
-            
-            if (context) {
-              console.log('🎉 Running in Farcaster Mini App!');
-              console.log('User:', context.user);
-              
-              // Show welcome message with Farcaster username
-              if (context.user && context.user.displayName) {
-                const welcomeMsg = document.createElement('div');
-                welcomeMsg.style.cssText = 'position: fixed; top: 10px; right: 10px; background: #0052FF; color: white; padding: 10px 20px; border-radius: 8px; font-size: 10px; z-index: 99999; box-shadow: 0 4px 8px rgba(0,0,0,0.3);';
-                welcomeMsg.textContent = '👋 Welcome ' + context.user.displayName + '!';
-                document.body.appendChild(welcomeMsg);
-                
-                // Remove after 5 seconds
-                setTimeout(() => welcomeMsg.remove(), 5000);
-              }
-              
-              // Hide splash screen - app is ready to be displayed
-              sdk.actions.ready();
-              
-              // Initialize Farcaster wallet connection
-              await initializeFarcasterWallet();
-            } else {
-              console.log('📱 Running as regular web app');
-            }
-          } catch (e) {
-            console.log('Not in Farcaster context:', e.message);
-          }
-        });
-        
-        // Also call ready when all resources are fully loaded
-        window.addEventListener('load', () => {
-          if (window.farcasterSDK) {
-            window.farcasterSDK.actions.ready();
-          }
-        });
-        
-        // Farcaster wallet initialization
-        async function initializeFarcasterWallet() {
-          try {
-            // Get Ethereum provider from Farcaster SDK
-            const provider = await sdk.wallet.getEthereumProvider();
-            
-            if (provider) {
-              console.log('🔗 Farcaster wallet connected!');
-              
-              // Get wallet address
-              const accounts = await provider.request({ method: 'eth_accounts' });
-              if (accounts && accounts.length > 0) {
-                const address = accounts[0];
-                console.log('💰 Wallet address:', address);
-                
-                // Show wallet status
-                showWalletStatus(address);
-              }
-            } else {
-              console.log('❌ No Farcaster wallet available');
-            }
-          } catch (error) {
-            console.log('❌ Wallet connection failed:', error);
-          }
-        }
-        
-        // Show wallet connection status
-        function showWalletStatus(address) {
-          const walletStatus = document.createElement('div');
-          walletStatus.style.cssText = 'position: fixed; top: 10px; left: 10px; background: #2ecc71; color: white; padding: 8px 16px; border-radius: 8px; font-size: 10px; z-index: 99999; box-shadow: 0 4px 8px rgba(0,0,0,0.3);';
-          walletStatus.textContent = '🔗 Wallet: ' + address.slice(0, 6) + '...' + address.slice(-4);
-          document.body.appendChild(walletStatus);
-          
-          // Remove after 5 seconds
-          setTimeout(() => walletStatus.remove(), 5000);
-        }
-      </script>
-      
       <div class="container">
                <div class="social-links">
                  <a href="https://x.com/Payx402token" title="X (Twitter)" target="_blank" rel="noopener noreferrer">𝕏</a>
                  <a href="#" title="Telegram">✈</a>
                </div>
         
-        <h1>PAYx Farcaster</h1>
-        <p class="subtitle">Buy PAYX Tokens with USDC on Base</p>
+        <h1>PAYx402</h1>
+        <p class="subtitle">Buy PAYX Tokens with USDC</p>
         
         <a href="#" onclick="openPaymentModal('/payment/1usdc', '💰 1 USDC Payment'); return false;">1 USDC → 5,000 PAYX</a>
         <a href="#" onclick="openPaymentModal('/payment/5usdc', '💎 5 USDC Payment'); return false;">5 USDC → 25,000 PAYX</a>
@@ -866,6 +713,211 @@ app.get("/", (c) => {
             showPaymentSuccess();
           }
         });
+      </script>
+      
+      <!-- Farcaster Mini App SDK + Wallet -->
+      <script type="module">
+        import { sdk } from "https://esm.sh/@farcaster/miniapp-sdk";
+        import { createConfig, http } from "https://esm.sh/wagmi";
+        import { base } from "https://esm.sh/wagmi/chains";
+        import { farcasterMiniApp } from "https://esm.sh/@farcaster/miniapp-wagmi-connector";
+        
+        window.farcasterSDK = sdk;
+        
+        // Wagmi configuration for Farcaster wallet
+        const config = createConfig({
+          chains: [base],
+          transports: {
+            [base.id]: http(),
+          },
+          connectors: [
+            farcasterMiniApp()
+          ]
+        });
+        
+        window.wagmiConfig = config;
+        
+        // Initialize SDK when page loads
+        window.addEventListener('DOMContentLoaded', async () => {
+          try {
+            // Check if we're in Farcaster Mini App
+            const context = await sdk.context;
+            
+            if (context) {
+              console.log('🎉 Running in Farcaster Mini App!');
+              console.log('User:', context.user);
+              
+              // Show welcome message with Farcaster username
+              if (context.user && context.user.displayName) {
+                const welcomeMsg = document.createElement('div');
+                welcomeMsg.style.cssText = 'position: fixed; top: 10px; right: 10px; background: #0052FF; color: white; padding: 10px 20px; border-radius: 8px; font-size: 10px; z-index: 99999; box-shadow: 0 4px 8px rgba(0,0,0,0.3);';
+                welcomeMsg.textContent = '👋 Welcome ' + context.user.displayName + '!';
+                document.body.appendChild(welcomeMsg);
+                
+                // Remove after 5 seconds
+                setTimeout(() => welcomeMsg.remove(), 5000);
+              }
+              
+              // Hide splash screen - app is ready to be displayed
+              sdk.actions.ready();
+              
+              // Initialize Farcaster wallet connection
+              await initializeFarcasterWallet();
+            } else {
+              console.log('📱 Running as regular web app');
+            }
+          } catch (e) {
+            console.log('Not in Farcaster context:', e.message);
+          }
+        });
+        
+        // Also call ready when all resources are fully loaded
+        window.addEventListener('load', () => {
+          if (window.farcasterSDK) {
+            window.farcasterSDK.actions.ready();
+          }
+        });
+        
+        // Farcaster wallet initialization
+        async function initializeFarcasterWallet() {
+          try {
+            // Get Ethereum provider from Farcaster SDK
+            const provider = await sdk.wallet.getEthereumProvider();
+            
+            if (provider) {
+              console.log('🔗 Farcaster wallet connected!');
+              
+              // Get wallet address
+              const accounts = await provider.request({ method: 'eth_accounts' });
+              if (accounts && accounts.length > 0) {
+                const address = accounts[0];
+                console.log('💰 Wallet address:', address);
+                
+                // Show wallet status
+                showWalletStatus(address);
+                
+                // Store provider globally for x402 integration
+                window.farcasterProvider = provider;
+                window.farcasterAddress = address;
+                
+                // Override x402 wallet selection with Farcaster wallet
+                overrideX402WalletSelection();
+              }
+            } else {
+              console.log('❌ No Farcaster wallet available');
+            }
+          } catch (error) {
+            console.log('❌ Wallet connection failed:', error);
+          }
+        }
+        
+        // Override x402 wallet selection to use Farcaster wallet
+        function overrideX402WalletSelection() {
+          // Wait for x402 iframe to load, then inject Farcaster wallet
+          const checkForX402 = setInterval(() => {
+            const iframe = document.getElementById('paymentIframe');
+            if (iframe && iframe.contentDocument) {
+              try {
+                // Check if x402 paywall is loaded
+                const x402Doc = iframe.contentDocument;
+                const walletButtons = x402Doc.querySelectorAll('button, [role="button"]');
+                
+                if (walletButtons.length > 0) {
+                  console.log('🎯 x402 paywall detected, injecting Farcaster wallet...');
+                  
+                  // Inject Farcaster wallet into x402 iframe
+                  injectFarcasterWalletIntoX402(x402Doc);
+                  
+                  clearInterval(checkForX402);
+                }
+              } catch (e) {
+                // Cross-origin restriction - that's expected
+                console.log('⏳ Waiting for x402 iframe to load...');
+              }
+            }
+          }, 500);
+          
+          // Stop checking after 10 seconds
+          setTimeout(() => clearInterval(checkForX402), 10000);
+        }
+        
+        // Inject Farcaster wallet into x402 iframe
+        function injectFarcasterWalletIntoX402(x402Doc) {
+          try {
+            // Create Farcaster wallet button
+            const farcasterButton = x402Doc.createElement('div');
+            farcasterButton.innerHTML = \`
+              <div style="
+                background: #0052FF;
+                color: white;
+                padding: 15px;
+                margin: 10px;
+                border-radius: 8px;
+                cursor: pointer;
+                text-align: center;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 12px;
+                border: 2px solid #000;
+                box-shadow: 4px 4px 0px #000;
+              " onclick="window.parent.connectFarcasterWallet()">
+                🔗 Connect Farcaster Wallet
+              </div>
+            \`;
+            
+            // Insert at the top of wallet selection
+            const walletContainer = x402Doc.querySelector('[class*="wallet"], [class*="connect"], [class*="button"]') || x402Doc.body;
+            if (walletContainer) {
+              walletContainer.insertBefore(farcasterButton.firstChild, walletContainer.firstChild);
+            }
+            
+            console.log('✅ Farcaster wallet button injected into x402');
+          } catch (error) {
+            console.log('❌ Failed to inject Farcaster wallet:', error);
+          }
+        }
+        
+        // Connect Farcaster wallet (called from x402 iframe)
+        window.connectFarcasterWallet = async function() {
+          try {
+            if (!window.farcasterProvider) {
+              throw new Error('Farcaster wallet not available');
+            }
+            
+            // Set the provider in the x402 iframe
+            const iframe = document.getElementById('paymentIframe');
+            if (iframe && iframe.contentWindow) {
+              iframe.contentWindow.ethereum = window.farcasterProvider;
+              iframe.contentWindow.web3 = { currentProvider: window.farcasterProvider };
+            }
+            
+            console.log('🔗 Farcaster wallet connected to x402');
+            
+            // Trigger x402 payment flow
+            const iframeDoc = iframe.contentDocument;
+            if (iframeDoc) {
+              // Find and click the first wallet button to proceed
+              const proceedButton = iframeDoc.querySelector('button, [role="button"]');
+              if (proceedButton) {
+                proceedButton.click();
+              }
+            }
+            
+          } catch (error) {
+            console.error('❌ Farcaster wallet connection failed:', error);
+            alert('Failed to connect Farcaster wallet: ' + error.message);
+          }
+        };
+        
+        // Show wallet connection status
+        function showWalletStatus(address) {
+          const walletStatus = document.createElement('div');
+          walletStatus.style.cssText = 'position: fixed; top: 10px; left: 10px; background: #2ecc71; color: white; padding: 8px 16px; border-radius: 8px; font-size: 10px; z-index: 99999; box-shadow: 0 4px 8px rgba(0,0,0,0.3);';
+          walletStatus.textContent = '🔗 Wallet: ' + address.slice(0, 6) + '...' + address.slice(-4);
+          document.body.appendChild(walletStatus);
+          
+          // Remove after 5 seconds
+          setTimeout(() => walletStatus.remove(), 5000);
+        }
       </script>
     </body>
     </html>
