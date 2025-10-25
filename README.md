@@ -21,9 +21,19 @@ Buy PAYX tokens with USDC directly in Farcaster or on the web!
 - **Blockchain**: Base Mainnet
 - **Payment**: USDC
 - **Facilitator**: Coinbase CDP
-- **Mini App**: Farcaster Frame SDK
+- **Mini App**: Farcaster Mini App SDK (@farcaster/miniapp-sdk)
 
 ## 📦 Installation
+
+### Requirements
+
+- **Node.js 22.11.0 or higher** (LTS recommended)
+  ```bash
+  node --version  # Check your version
+  ```
+  If you're using Node.js < 22.11.0, update to latest LTS from [nodejs.org](https://nodejs.org)
+
+### Setup
 
 1. Clone repository:
 ```bash
@@ -105,10 +115,24 @@ http://localhost:3000
 4. Deploy!
 
 ### Farcaster Mini App Store:
+
+**Prerequisites:**
+1. Enable Developer Mode:
+   - Visit https://farcaster.xyz/~/settings/developer-tools
+   - Toggle on "Developer Mode"
+   - Developer tools will appear on desktop
+
+**Submission:**
 1. Deploy to Vercel
-2. Submit `farcaster.json` manifest
-3. Get approved
-4. Listed in Mini App Store!
+2. Test with Mini App Debug Tool (requires Developer Mode)
+3. Submit manifest for approval
+4. Get listed in Mini App Store!
+
+**Testing:**
+1. Open [Mini App Debug Tool](https://farcaster.xyz/~/developers/mini-apps)
+2. Enter your app URL: `https://payxfarcaster.vercel.app`
+3. Click "Preview"
+4. Test all features before publishing
 
 ## 💎 Token Information
 

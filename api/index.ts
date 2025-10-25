@@ -487,9 +487,9 @@ app.get("/", (c) => {
       </style>
     </head>
     <body>
-      <!-- Farcaster SDK -->
+      <!-- Farcaster Mini App SDK -->
       <script type="module">
-        import { sdk } from "https://esm.sh/@farcaster/frame-sdk@0.1.12";
+        import { sdk } from "https://esm.sh/@farcaster/miniapp-sdk";
         
         window.farcasterSDK = sdk;
         
