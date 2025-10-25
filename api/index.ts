@@ -32,35 +32,35 @@ app.use(
         price: "$0.01",
         network: network,
         config: {
-          description: "🧪 TEST: Pay 0.01 USDC → Get 50 PAYX tokens",
+          description: "🧪 TEST: Pay 0.01 USDC → Get 50 PAYX tokens. Tokens will be sent to your wallet later.",
         }
       },
       "GET /payment/1usdc": {
         price: "$1",
         network: network,
         config: {
-          description: "💰 Pay 1 USDC → Get 5,000 PAYX tokens",
+          description: "💰 Pay 1 USDC → Get 5,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
       },
       "GET /payment/5usdc": {
         price: "$5",
         network: network,
         config: {
-          description: "💎 Pay 5 USDC → Get 25,000 PAYX tokens",
+          description: "💎 Pay 5 USDC → Get 25,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
       },
       "GET /payment/10usdc": {
         price: "$10",
         network: network,
         config: {
-          description: "🚀 Pay 10 USDC → Get 50,000 PAYX tokens",
+          description: "🚀 Pay 10 USDC → Get 50,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
       },
       "GET /payment/100usdc": {
         price: "$100",
         network: network,
         config: {
-          description: "🌟 Pay 100 USDC → Get 500,000 PAYX tokens (Best Value!)",
+          description: "🌟 Pay 100 USDC → Get 500,000 PAYX tokens (Best Value!). Tokens will be sent to your wallet later.",
         }
       }
     },
@@ -564,11 +564,19 @@ app.get("/", (c) => {
           
           // Prevent body scroll
           document.body.style.overflow = 'hidden';
+          
+          // Start monitoring for payment success
+          setTimeout(() => startPaymentMonitoring(), 1000);
         }
         
         function closePaymentModal() {
           const modal = document.getElementById('paymentModal');
           const iframe = document.getElementById('paymentIframe');
+          
+          // Stop monitoring
+          if (checkInterval) {
+            clearInterval(checkInterval);
+          }
           
           // Hide modal
           modal.classList.remove('active');
@@ -647,10 +655,45 @@ app.get("/", (c) => {
           coinRain.innerHTML = '';
         }
         
-        // Listen for payment success from iframe (x402)
+        // Listen for iframe navigation (payment success detection)
+        let checkInterval;
+        function startPaymentMonitoring() {
+          const iframe = document.getElementById('paymentIframe');
+          if (!iframe) return;
+          
+          checkInterval = setInterval(() => {
+            try {
+              // Check if iframe URL changed or if we can detect success
+              const iframeSrc = iframe.src;
+              
+              // If iframe shows JSON response or success page
+              if (iframeSrc.includes('/payment/') && iframe.contentDocument) {
+                try {
+                  const body = iframe.contentDocument.body;
+                  const text = body.innerText || body.textContent;
+                  
+                  // Check for success indicators in response
+                  if (text.includes('"success":true') || 
+                      text.includes('Payment confirmed') ||
+                      text.includes('PAYX tokens will be sent')) {
+                    clearInterval(checkInterval);
+                    showPaymentSuccess();
+                  }
+                } catch (e) {
+                  // Cross-origin restriction - that's ok
+                }
+              }
+            } catch (e) {
+              // Ignore errors
+            }
+          }, 500);
+        }
+        
+        // Also listen for postMessage from iframe
         window.addEventListener('message', function(event) {
           // Check if message is from payment iframe
-          if (event.data && event.data.type === 'payment_success') {
+          if (event.data && (event.data.type === 'payment_success' || event.data.success === true)) {
+            clearInterval(checkInterval);
             showPaymentSuccess();
           }
         });
