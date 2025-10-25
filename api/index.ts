@@ -146,8 +146,8 @@ app.get("/.well-known/farcaster.json", (c) => {
     "frame": {
       "version": "1",
       "name": "PAYx Farcaster",
-      "iconUrl": "https://x402payx.vercel.app/PAYX Logoo.png",
-      "splashImageUrl": "https://x402payx.vercel.app/PAYX Logoo.png",
+      "iconUrl": "https://x402payx.vercel.app/PAYX-Logo.png",
+      "splashImageUrl": "https://x402payx.vercel.app/PAYX-Logo.png",
       "splashBackgroundColor": "#20B2AA",
       "homeUrl": "https://x402payx.vercel.app",
       "webhookUrl": "https://x402payx.vercel.app/api/webhook"
@@ -156,15 +156,15 @@ app.get("/.well-known/farcaster.json", (c) => {
 });
 
 // Serve static files (PAYX logo)
-app.get("/PAYX Logoo.png", (c) => {
-  return c.redirect("/public/PAYX Logoo.png");
+app.get("/PAYX-Logo.png", (c) => {
+  return c.redirect("/public/PAYX-Logo.png");
 });
 
-app.get("/public/PAYX Logoo.png", async (c) => {
+app.get("/public/PAYX-Logo.png", async (c) => {
   try {
     const fs = await import('fs');
     const path = await import('path');
-    const filePath = path.join(process.cwd(), 'public', 'PAYX Logoo.png');
+    const filePath = path.join(process.cwd(), 'public', 'PAYX-Logo.png');
     const fileBuffer = fs.readFileSync(filePath);
     
     return new Response(fileBuffer, {
