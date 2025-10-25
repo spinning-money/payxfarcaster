@@ -143,16 +143,25 @@ app.get("/", (c) => {
   }
   
   return c.html(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>PAYx402 - x402 Payment</title>
-      <link rel="icon" type="image/png" href="/favicon.png">
-      <link rel="shortcut icon" type="image/png" href="/favicon.png">
-      <link rel="apple-touch-icon" href="/favicon.png">
-      <style>
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PAYx Farcaster - Buy PAYX Tokens</title>
+        <meta name="description" content="Buy PAYX tokens with USDC using x402 protocol on Base Mainnet">
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+        <link rel="apple-touch-icon" href="/favicon.png">
+        
+        <!-- Farcaster Frame Metadata -->
+        <meta property="fc:frame" content="vNext">
+        <meta property="fc:frame:image" content="https://payxfarcaster.vercel.app/favicon.png">
+        <meta property="fc:frame:button:1" content="Buy PAYX 💰">
+        <meta property="fc:frame:button:1:action" content="link">
+        <meta property="fc:frame:button:1:target" content="https://payxfarcaster.vercel.app">
+        
+        <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
         * { 
@@ -458,14 +467,49 @@ app.get("/", (c) => {
       </style>
     </head>
     <body>
+      <!-- Farcaster SDK -->
+      <script type="module">
+        import { sdk } from "https://esm.sh/@farcaster/frame-sdk@0.1.12";
+        
+        window.farcasterSDK = sdk;
+        
+        // Initialize SDK when page loads
+        window.addEventListener('DOMContentLoaded', async () => {
+          try {
+            // Check if we're in Farcaster Mini App
+            const context = await sdk.context;
+            
+            if (context) {
+              console.log('🎉 Running in Farcaster Mini App!');
+              console.log('User:', context.user);
+              
+              // Show welcome message with Farcaster username
+              if (context.user && context.user.displayName) {
+                const welcomeMsg = document.createElement('div');
+                welcomeMsg.style.cssText = 'position: fixed; top: 10px; right: 10px; background: #0052FF; color: white; padding: 10px 20px; border-radius: 8px; font-size: 10px; z-index: 99999; box-shadow: 0 4px 8px rgba(0,0,0,0.3);';
+                welcomeMsg.textContent = `👋 Welcome ${context.user.displayName}!`;
+                document.body.appendChild(welcomeMsg);
+                
+                // Remove after 5 seconds
+                setTimeout(() => welcomeMsg.remove(), 5000);
+              }
+            } else {
+              console.log('📱 Running as regular web app');
+            }
+          } catch (e) {
+            console.log('Not in Farcaster context:', e.message);
+          }
+        });
+      </script>
+      
       <div class="container">
                <div class="social-links">
                  <a href="https://x.com/Payx402token" title="X (Twitter)" target="_blank" rel="noopener noreferrer">𝕏</a>
                  <a href="#" title="Telegram">✈</a>
                </div>
         
-        <h1>PAYx402</h1>
-        <p class="subtitle">Buy PAYX Tokens with USDC</p>
+        <h1>PAYx Farcaster</h1>
+        <p class="subtitle">Buy PAYX Tokens with USDC on Base</p>
         
         <a href="#" onclick="openPaymentModal('/payment/1usdc', '💰 1 USDC Payment'); return false;">1 USDC → 5,000 PAYX</a>
         <a href="#" onclick="openPaymentModal('/payment/5usdc', '💎 5 USDC Payment'); return false;">5 USDC → 25,000 PAYX</a>
