@@ -28,6 +28,13 @@ app.use(
   x402Middleware(
     payTo,
     {
+      "GET /payment/test": {
+        price: "$0.01",
+        network: network,
+        config: {
+          description: "TEST: Pay 0.01 USDC → Get 50 PAYX tokens",
+        }
+      },
       "GET /payment/1usdc": {
         price: "$1",
         network: network,
@@ -62,6 +69,18 @@ app.use(
 );
 
 // Protected endpoints - Only accessible after payment
+app.get("/payment/test", (c) => {
+  return c.json({
+    success: true,
+    message: "Test payment confirmed! Your PAYX tokens will be sent to your wallet soon.",
+    payment: {
+      amount: "0.01 USDC",
+      tokens: "50 PAYX",
+      status: "Payment recorded - Tokens will be distributed later"
+    }
+  });
+});
+
 app.get("/payment/1usdc", (c) => {
   return c.json({
     success: true,
@@ -225,6 +244,27 @@ app.get("/", (c) => {
           color: #fff;
           transform: scale(1.1);
         }
+        .test-button {
+          background: #1a472a !important; /* Dark green */
+          border-color: #2ecc71 !important; /* Light green */
+          color: #2ecc71 !important;
+          font-size: 10px !important;
+          margin-top: 25px !important;
+          position: relative;
+        }
+        .test-button::before {
+          content: '🧪 TEST';
+          position: absolute;
+          top: -20px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 9px;
+          color: #2ecc71;
+        }
+        .test-button:hover {
+          background: #2ecc71 !important;
+          color: #000 !important;
+        }
       </style>
     </head>
     <body>
@@ -242,6 +282,8 @@ app.get("/", (c) => {
         <a href="/payment/10usdc">10 USDC → 50,000 PAYX</a>
         <a href="/payment/100usdc">100 USDC → 500,000 PAYX</a>
         
+        <a href="/payment/test" class="test-button">0.01 USDC → 50 PAYX</a>
+        
         <div class="info">
           <p><strong>Token Information:</strong></p>
           <p>• Token: PAYX</p>
@@ -250,6 +292,7 @@ app.get("/", (c) => {
           <p>• Network: Base Mainnet</p>
           
           <p style="margin-top: 15px;"><strong>Payment Options:</strong></p>
+          <p>• 0.01 USDC = 50 PAYX (Test)</p>
           <p>• 1 USDC = 5,000 PAYX</p>
           <p>• 5 USDC = 25,000 PAYX</p>
           <p>• 10 USDC = 50,000 PAYX</p>
