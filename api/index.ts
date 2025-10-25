@@ -346,9 +346,11 @@ app.get("/", (c) => {
           color: inherit;
         }
         .web-subtitle {
-          font-size: 10px;
-          opacity: 0.8;
+          font-size: 9px;
+          opacity: 0.9;
           color: inherit;
+          word-break: break-all;
+          font-family: 'Courier New', monospace;
         }
           left: 50%;
           transform: translateX(-50%);
@@ -557,11 +559,11 @@ app.get("/", (c) => {
         
         <!-- Web Alternative Link -->
         <div class="web-alternative">
-          <a href="https://payx402.fun/" target="_blank" class="web-link">
+          <a href="https://payx402.fun/" target="_blank" class="web-link" onclick="copyAndOpen(event, 'https://payx402.fun/')">
             <div class="web-icon">🌐</div>
             <div class="web-text">
               <div class="web-title">Web Version</div>
-              <div class="web-subtitle">Full x402 Support</div>
+              <div class="web-subtitle">https://payx402.fun/</div>
             </div>
           </a>
         </div>
@@ -812,6 +814,30 @@ app.get("/", (c) => {
             showPaymentSuccess();
           }
         });
+        
+        // Copy and open function for web link
+        function copyAndOpen(event, url) {
+          event.preventDefault();
+          
+          // Copy to clipboard
+          navigator.clipboard.writeText(url).then(function() {
+            // Show copy success message
+            const copyMsg = document.createElement('div');
+            copyMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2ecc71; color: white; padding: 15px 25px; border-radius: 8px; font-family: "Press Start 2P", monospace; font-size: 10px; z-index: 99999; box-shadow: 0 4px 8px rgba(0,0,0,0.3); border: 2px solid #000;';
+            copyMsg.textContent = '📋 URL Copied!';
+            document.body.appendChild(copyMsg);
+            
+            // Remove after 2 seconds
+            setTimeout(() => copyMsg.remove(), 2000);
+          }).catch(function(err) {
+            console.error('Failed to copy: ', err);
+            // Fallback: show URL in alert
+            alert('URL: ' + url);
+          });
+          
+          // Open in new tab
+          window.open(url, '_blank');
+        }
       </script>
       
       <!-- Farcaster Mini App SDK + Wallet -->
