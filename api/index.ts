@@ -129,6 +129,29 @@ app.get("/payment/100usdc", (c) => {
   });
 });
 
+// Serve static files (PAYX logo)
+app.get("/PAYX Logoo.png", (c) => {
+  return c.redirect("/public/PAYX Logoo.png");
+});
+
+app.get("/public/PAYX Logoo.png", async (c) => {
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const filePath = path.join(process.cwd(), 'public', 'PAYX Logoo.png');
+    const fileBuffer = fs.readFileSync(filePath);
+    
+    return new Response(fileBuffer, {
+      headers: {
+        "Content-Type": "image/png",
+        "Cache-Control": "public, max-age=31536000"
+      }
+    });
+  } catch (error) {
+    return c.text("Logo not found", 404);
+  }
+});
+
 // Serve Farcaster manifest
 app.get("/.well-known/farcaster.json", (c) => {
   return c.json({
@@ -140,9 +163,9 @@ app.get("/.well-known/farcaster.json", (c) => {
     "frame": {
       "version": "1",
       "name": "PAYx Farcaster",
-      "iconUrl": "https://payxfarcaster.vercel.app/favicon.png",
-      "splashImageUrl": "https://payxfarcaster.vercel.app/favicon.png",
-      "splashBackgroundColor": "#000814",
+      "iconUrl": "https://payxfarcaster.vercel.app/PAYX Logoo.png",
+      "splashImageUrl": "https://payxfarcaster.vercel.app/PAYX Logoo.png",
+      "splashBackgroundColor": "#20B2AA",
       "homeUrl": "https://payxfarcaster.vercel.app",
       "webhookUrl": "https://payxfarcaster.vercel.app/api/webhook"
     }
@@ -170,7 +193,7 @@ app.get("/", (c) => {
         
         <!-- Farcaster Mini App Embed Metadata -->
         <meta property="fc:miniapp" content="vNext">
-        <meta property="fc:miniapp:image" content="https://payxfarcaster.vercel.app/favicon.png">
+        <meta property="fc:miniapp:image" content="https://payxfarcaster.vercel.app/PAYX Logoo.png">
         <meta property="fc:miniapp:button:1" content="Buy PAYX Tokens">
         <meta property="fc:miniapp:button:1:action" content="launch_frame">
         <meta property="fc:miniapp:button:1:target" content="https://payxfarcaster.vercel.app">
@@ -178,7 +201,7 @@ app.get("/", (c) => {
         <!-- Open Graph for general sharing -->
         <meta property="og:title" content="PAYx Farcaster - Buy PAYX Tokens">
         <meta property="og:description" content="Buy PAYX tokens with USDC using x402 protocol on Base Mainnet">
-        <meta property="og:image" content="https://payxfarcaster.vercel.app/favicon.png">
+        <meta property="og:image" content="https://payxfarcaster.vercel.app/PAYX Logoo.png">
         <meta property="og:url" content="https://payxfarcaster.vercel.app">
         
         <style>

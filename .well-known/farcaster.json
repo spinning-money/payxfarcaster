@@ -4,14 +4,14 @@
     "payload": "eyJkb21haW4iOiJwYXl4ZmFyY2FzdGVyLnZlcmNlbC5hcHAifQ",
     "signature": "MHhh..."
   },
-  "frame": {
-    "version": "1",
-    "name": "PAYx Farcaster",
-    "iconUrl": "https://payxfarcaster.vercel.app/favicon.png",
-    "splashImageUrl": "https://payxfarcaster.vercel.app/favicon.png",
-    "splashBackgroundColor": "#000814",
-    "homeUrl": "https://payxfarcaster.vercel.app",
-    "webhookUrl": "https://payxfarcaster.vercel.app/api/webhook"
-  }
+    "frame": {
+      "version": "1",
+      "name": "PAYx Farcaster",
+      "iconUrl": "https://payxfarcaster.vercel.app/PAYX Logoo.png",
+      "splashImageUrl": "https://payxfarcaster.vercel.app/PAYX Logoo.png",
+      "splashBackgroundColor": "#20B2AA",
+      "homeUrl": "https://payxfarcaster.vercel.app",
+      "webhookUrl": "https://payxfarcaster.vercel.app/api/webhook"
+    }
 }
 
