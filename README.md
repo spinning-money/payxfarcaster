@@ -90,6 +90,8 @@ http://localhost:3000
 - **Splash Screen**: Branded loading screen (automatically hidden when ready)
 - **User Detection**: Automatically detects Farcaster username
 - **Welcome Message**: Personalized greeting for Farcaster users
+- **Wallet Integration**: Automatic Farcaster wallet connection
+- **Base Network**: Pre-configured for Base Mainnet
 - **Frame Metadata**: Proper Open Graph tags for casting
 - **Mobile Optimized**: Native-like UI in Farcaster app
 - **Share Extension**: Easy sharing after purchase

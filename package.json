@@ -10,9 +10,12 @@
   "dependencies": {
     "@coinbase/x402": "^0.6.6",
     "@farcaster/miniapp-sdk": "^0.2.1",
+    "@farcaster/miniapp-wagmi-connector": "^1.1.0",
     "@hono/node-server": "^1.19.5",
     "dotenv": "^17.2.3",
     "hono": "^4.10.3",
+    "viem": "^2.38.4",
+    "wagmi": "^2.18.2",
     "x402-hono": "^0.6.5"
   }
 }

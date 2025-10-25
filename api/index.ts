@@ -510,11 +510,27 @@ app.get("/", (c) => {
       </style>
     </head>
     <body>
-      <!-- Farcaster Mini App SDK -->
+      <!-- Farcaster Mini App SDK + Wallet -->
       <script type="module">
         import { sdk } from "https://esm.sh/@farcaster/miniapp-sdk";
+        import { createConfig, http } from "https://esm.sh/wagmi";
+        import { base } from "https://esm.sh/wagmi/chains";
+        import { farcasterMiniApp } from "https://esm.sh/@farcaster/miniapp-wagmi-connector";
         
         window.farcasterSDK = sdk;
+        
+        // Wagmi configuration for Farcaster wallet
+        const config = createConfig({
+          chains: [base],
+          transports: {
+            [base.id]: http(),
+          },
+          connectors: [
+            farcasterMiniApp()
+          ]
+        });
+        
+        window.wagmiConfig = config;
         
         // Initialize SDK when page loads
         window.addEventListener('DOMContentLoaded', async () => {
@@ -539,6 +555,9 @@ app.get("/", (c) => {
               
               // Hide splash screen - app is ready to be displayed
               sdk.actions.ready();
+              
+              // Initialize Farcaster wallet connection
+              await initializeFarcasterWallet();
             } else {
               console.log('📱 Running as regular web app');
             }
@@ -553,6 +572,43 @@ app.get("/", (c) => {
             window.farcasterSDK.actions.ready();
           }
         });
+        
+        // Farcaster wallet initialization
+        async function initializeFarcasterWallet() {
+          try {
+            // Get Ethereum provider from Farcaster SDK
+            const provider = await sdk.wallet.getEthereumProvider();
+            
+            if (provider) {
+              console.log('🔗 Farcaster wallet connected!');
+              
+              // Get wallet address
+              const accounts = await provider.request({ method: 'eth_accounts' });
+              if (accounts && accounts.length > 0) {
+                const address = accounts[0];
+                console.log('💰 Wallet address:', address);
+                
+                // Show wallet status
+                showWalletStatus(address);
+              }
+            } else {
+              console.log('❌ No Farcaster wallet available');
+            }
+          } catch (error) {
+            console.log('❌ Wallet connection failed:', error);
+          }
+        }
+        
+        // Show wallet connection status
+        function showWalletStatus(address) {
+          const walletStatus = document.createElement('div');
+          walletStatus.style.cssText = 'position: fixed; top: 10px; left: 10px; background: #2ecc71; color: white; padding: 8px 16px; border-radius: 8px; font-size: 10px; z-index: 99999; box-shadow: 0 4px 8px rgba(0,0,0,0.3);';
+          walletStatus.textContent = '🔗 Wallet: ' + address.slice(0, 6) + '...' + address.slice(-4);
+          document.body.appendChild(walletStatus);
+          
+          // Remove after 5 seconds
+          setTimeout(() => walletStatus.remove(), 5000);
+        }
       </script>
       
       <div class="container">
