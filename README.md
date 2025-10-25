@@ -77,11 +77,13 @@ http://localhost:3000
 
 ## 📱 Farcaster Features
 
+- **Splash Screen**: Branded loading screen (automatically hidden when ready)
 - **User Detection**: Automatically detects Farcaster username
 - **Welcome Message**: Personalized greeting for Farcaster users
 - **Frame Metadata**: Proper Open Graph tags for casting
 - **Mobile Optimized**: Native-like UI in Farcaster app
 - **Share Extension**: Easy sharing after purchase
+- **Performance**: Calls `sdk.actions.ready()` to optimize loading
 
 ## 🌐 Environment Variables
 

@@ -513,11 +513,21 @@ app.get("/", (c) => {
                 // Remove after 5 seconds
                 setTimeout(() => welcomeMsg.remove(), 5000);
               }
+              
+              // Hide splash screen - app is ready to be displayed
+              sdk.actions.ready();
             } else {
               console.log('📱 Running as regular web app');
             }
           } catch (e) {
             console.log('Not in Farcaster context:', e.message);
+          }
+        });
+        
+        // Also call ready when all resources are fully loaded
+        window.addEventListener('load', () => {
+          if (window.farcasterSDK) {
+            window.farcasterSDK.actions.ready();
           }
         });
       </script>
