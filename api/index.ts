@@ -135,6 +135,49 @@ app.get("/payment/100usdc", (c) => {
   });
 });
 
+// Serve Farcaster manifest
+app.get("/.well-known/farcaster.json", (c) => {
+  return c.json({
+    "accountAssociation": {
+      "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MTIzNDU2Nzg5MGFiY2RlZjEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3OCJ9",
+      "payload": "eyJkb21haW4iOiJ4NDAycGF5eC52ZXJjZWwuYXBwIn0",
+      "signature": "MHhh..."
+    },
+    "frame": {
+      "version": "1",
+      "name": "PAYx Farcaster",
+      "iconUrl": "https://x402payx.vercel.app/PAYX Logoo.png",
+      "splashImageUrl": "https://x402payx.vercel.app/PAYX Logoo.png",
+      "splashBackgroundColor": "#20B2AA",
+      "homeUrl": "https://x402payx.vercel.app",
+      "webhookUrl": "https://x402payx.vercel.app/api/webhook"
+    }
+  });
+});
+
+// Serve static files (PAYX logo)
+app.get("/PAYX Logoo.png", (c) => {
+  return c.redirect("/public/PAYX Logoo.png");
+});
+
+app.get("/public/PAYX Logoo.png", async (c) => {
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const filePath = path.join(process.cwd(), 'public', 'PAYX Logoo.png');
+    const fileBuffer = fs.readFileSync(filePath);
+    
+    return new Response(fileBuffer, {
+      headers: {
+        "Content-Type": "image/png",
+        "Cache-Control": "public, max-age=31536000"
+      }
+    });
+  } catch (error) {
+    return c.text("Logo not found", 404);
+  }
+});
+
 // Simple info page with links to protected endpoints
 app.get("/", (c) => {
   // Vercel optimization - faster response
