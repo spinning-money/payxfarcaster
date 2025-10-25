@@ -32,35 +32,35 @@ app.use(
         price: "$0.01",
         network: network,
         config: {
-          description: "TEST: Pay 0.01 USDC → Get 50 PAYX tokens",
+          description: "🧪 TEST: Pay 0.01 USDC → Get 50 PAYX tokens",
         }
       },
       "GET /payment/1usdc": {
         price: "$1",
         network: network,
         config: {
-          description: "Pay 1 USDC → Get 5,000 PAYX tokens",
+          description: "💰 Pay 1 USDC → Get 5,000 PAYX tokens",
         }
       },
       "GET /payment/5usdc": {
         price: "$5",
         network: network,
         config: {
-          description: "Pay 5 USDC → Get 25,000 PAYX tokens",
+          description: "💎 Pay 5 USDC → Get 25,000 PAYX tokens",
         }
       },
       "GET /payment/10usdc": {
         price: "$10",
         network: network,
         config: {
-          description: "Pay 10 USDC → Get 50,000 PAYX tokens",
+          description: "🚀 Pay 10 USDC → Get 50,000 PAYX tokens",
         }
       },
       "GET /payment/100usdc": {
         price: "$100",
         network: network,
         config: {
-          description: "Pay 100 USDC → Get 500,000 PAYX tokens",
+          description: "🌟 Pay 100 USDC → Get 500,000 PAYX tokens (Best Value!)",
         }
       }
     },
@@ -265,6 +265,190 @@ app.get("/", (c) => {
           background: #2ecc71 !important;
           color: #000 !important;
         }
+        
+        /* Pixel Art Modal */
+        .modal-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.9);
+          z-index: 9999;
+          animation: fadeIn 0.2s;
+        }
+        .modal-overlay.active {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .modal-content {
+          background: #001d3d;
+          border: 4px solid #0052FF;
+          box-shadow: 0 0 40px rgba(0, 82, 255, 0.8), 8px 8px 0px #000;
+          max-width: 90%;
+          max-height: 90%;
+          width: 800px;
+          height: 600px;
+          position: relative;
+          animation: pixelPop 0.3s;
+        }
+        .modal-content.test {
+          border-color: #2ecc71;
+          box-shadow: 0 0 40px rgba(46, 204, 113, 0.8), 8px 8px 0px #000;
+        }
+        .modal-content.premium {
+          border-color: #FFD700;
+          box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 8px 8px 0px #000;
+        }
+        .modal-header {
+          background: #000814;
+          border-bottom: 4px solid #0052FF;
+          padding: 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .modal-content.test .modal-header {
+          border-bottom-color: #2ecc71;
+        }
+        .modal-content.premium .modal-header {
+          border-bottom-color: #FFD700;
+        }
+        .modal-title {
+          font-size: 16px;
+          color: #0052FF;
+          text-shadow: 2px 2px 0px #000;
+        }
+        .modal-content.test .modal-title {
+          color: #2ecc71;
+        }
+        .modal-content.premium .modal-title {
+          color: #FFD700;
+        }
+        .modal-close {
+          background: #ff4d4d;
+          border: 3px solid #000;
+          color: #fff;
+          cursor: pointer;
+          padding: 8px 16px;
+          font-size: 12px;
+          box-shadow: 3px 3px 0px #000;
+          transition: all 0.1s;
+        }
+        .modal-close:hover {
+          transform: translate(2px, 2px);
+          box-shadow: 1px 1px 0px #000;
+        }
+        .modal-body {
+          width: 100%;
+          height: calc(100% - 68px);
+        }
+        .modal-iframe {
+          width: 100%;
+          height: 100%;
+          border: none;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes pixelPop {
+          0% { transform: scale(0.8); opacity: 0; }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Coin Rain Animation */
+        .coin-rain {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 99999;
+        }
+        .coin {
+          position: absolute;
+          font-size: 32px;
+          animation: coinFall 3s linear forwards;
+          text-shadow: 2px 2px 0px #000;
+        }
+        @keyframes coinFall {
+          0% {
+            transform: translateY(-100px) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(100vh) rotate(720deg);
+            opacity: 0;
+          }
+        }
+        @keyframes coinRotate {
+          0%, 100% { transform: rotateY(0deg); }
+          50% { transform: rotateY(180deg); }
+        }
+        
+        /* Success Message */
+        .success-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.95);
+          z-index: 100000;
+          align-items: center;
+          justify-content: center;
+          animation: fadeIn 0.3s;
+        }
+        .success-overlay.active {
+          display: flex;
+        }
+        .success-box {
+          background: #001d3d;
+          border: 4px solid #2ecc71;
+          box-shadow: 0 0 50px rgba(46, 204, 113, 1), 8px 8px 0px #000;
+          padding: 40px;
+          text-align: center;
+          max-width: 500px;
+          animation: pixelPop 0.5s;
+        }
+        .success-icon {
+          font-size: 64px;
+          margin-bottom: 20px;
+          animation: coinRotate 2s infinite;
+        }
+        .success-title {
+          font-size: 24px;
+          color: #2ecc71;
+          text-shadow: 3px 3px 0px #000;
+          margin-bottom: 15px;
+        }
+        .success-text {
+          font-size: 12px;
+          color: #4d94ff;
+          line-height: 1.8;
+          margin-bottom: 25px;
+        }
+        .success-button {
+          background: #2ecc71;
+          border: 4px solid #000;
+          color: #000;
+          padding: 12px 32px;
+          font-size: 12px;
+          cursor: pointer;
+          box-shadow: 4px 4px 0px #000;
+          transition: all 0.1s;
+          font-weight: bold;
+        }
+        .success-button:hover {
+          transform: translate(2px, 2px);
+          box-shadow: 2px 2px 0px #000;
+        }
       </style>
     </head>
     <body>
@@ -277,12 +461,12 @@ app.get("/", (c) => {
         <h1>PAYx402</h1>
         <p class="subtitle">Buy PAYX Tokens with USDC</p>
         
-        <a href="/payment/1usdc">1 USDC → 5,000 PAYX</a>
-        <a href="/payment/5usdc">5 USDC → 25,000 PAYX</a>
-        <a href="/payment/10usdc">10 USDC → 50,000 PAYX</a>
-        <a href="/payment/100usdc">100 USDC → 500,000 PAYX</a>
+        <a href="#" onclick="openPaymentModal('/payment/1usdc', '💰 1 USDC Payment'); return false;">1 USDC → 5,000 PAYX</a>
+        <a href="#" onclick="openPaymentModal('/payment/5usdc', '💎 5 USDC Payment'); return false;">5 USDC → 25,000 PAYX</a>
+        <a href="#" onclick="openPaymentModal('/payment/10usdc', '🚀 10 USDC Payment'); return false;">10 USDC → 50,000 PAYX</a>
+        <a href="#" onclick="openPaymentModal('/payment/100usdc', '🌟 100 USDC Payment', 'premium'); return false;">100 USDC → 500,000 PAYX</a>
         
-        <a href="/payment/test" class="test-button">0.01 USDC → 50 PAYX</a>
+        <a href="#" onclick="openPaymentModal('/payment/test', '🧪 Test Payment', 'test'); return false;" class="test-button">0.01 USDC → 50 PAYX</a>
         
         <div class="info">
           <p><strong>Token Information:</strong></p>
@@ -323,6 +507,164 @@ app.get("/", (c) => {
           </p>
         </div>
       </div>
+      
+      <!-- Pixel Art Modal -->
+      <div id="paymentModal" class="modal-overlay">
+        <div id="modalContent" class="modal-content">
+          <div class="modal-header">
+            <div class="modal-title" id="modalTitle">Payment</div>
+            <button class="modal-close" onclick="closePaymentModal()">✕ CLOSE</button>
+          </div>
+          <div class="modal-body">
+            <iframe id="paymentIframe" class="modal-iframe" src="about:blank"></iframe>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Success Overlay with Coin Rain -->
+      <div id="successOverlay" class="success-overlay">
+        <div class="success-box">
+          <div class="success-icon">💰</div>
+          <div class="success-title">PAYMENT SUCCESSFUL!</div>
+          <div class="success-text">
+            Your payment has been confirmed!<br>
+            PAYX tokens will be sent to your wallet soon.<br><br>
+            <strong>Thank you for your purchase! 🎉</strong>
+          </div>
+          <button class="success-button" onclick="closeSuccessOverlay()">AWESOME!</button>
+        </div>
+      </div>
+      
+      <!-- Coin Rain Container -->
+      <div id="coinRain" class="coin-rain"></div>
+      
+      <script>
+        function openPaymentModal(url, title, type) {
+          const modal = document.getElementById('paymentModal');
+          const modalContent = document.getElementById('modalContent');
+          const modalTitle = document.getElementById('modalTitle');
+          const iframe = document.getElementById('paymentIframe');
+          
+          // Set title
+          modalTitle.textContent = title;
+          
+          // Set modal class based on type
+          modalContent.className = 'modal-content';
+          if (type === 'test') {
+            modalContent.classList.add('test');
+          } else if (type === 'premium') {
+            modalContent.classList.add('premium');
+          }
+          
+          // Load payment iframe
+          iframe.src = url;
+          
+          // Show modal
+          modal.classList.add('active');
+          
+          // Prevent body scroll
+          document.body.style.overflow = 'hidden';
+        }
+        
+        function closePaymentModal() {
+          const modal = document.getElementById('paymentModal');
+          const iframe = document.getElementById('paymentIframe');
+          
+          // Hide modal
+          modal.classList.remove('active');
+          
+          // Clear iframe
+          iframe.src = 'about:blank';
+          
+          // Restore body scroll
+          document.body.style.overflow = '';
+        }
+        
+        // Close modal on overlay click
+        document.getElementById('paymentModal').addEventListener('click', function(e) {
+          if (e.target === this) {
+            closePaymentModal();
+          }
+        });
+        
+        // Close modal on ESC key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            closePaymentModal();
+          }
+        });
+        
+        // Coin Rain Animation
+        function createCoinRain(duration = 5000) {
+          const coinRain = document.getElementById('coinRain');
+          const coins = ['💰', '🪙', '💎', '⭐', '✨'];
+          const coinsToCreate = 50; // Number of coins
+          
+          for (let i = 0; i < coinsToCreate; i++) {
+            setTimeout(() => {
+              const coin = document.createElement('div');
+              coin.className = 'coin';
+              coin.textContent = coins[Math.floor(Math.random() * coins.length)];
+              coin.style.left = Math.random() * 100 + '%';
+              coin.style.animationDuration = (Math.random() * 2 + 2) + 's';
+              coin.style.animationDelay = (Math.random() * 0.5) + 's';
+              
+              coinRain.appendChild(coin);
+              
+              // Remove coin after animation
+              setTimeout(() => {
+                coin.remove();
+              }, 4000);
+            }, i * 100);
+          }
+        }
+        
+        // Show success overlay with coin rain
+        function showPaymentSuccess() {
+          // Close payment modal
+          closePaymentModal();
+          
+          // Show success overlay
+          const successOverlay = document.getElementById('successOverlay');
+          successOverlay.classList.add('active');
+          
+          // Start coin rain
+          createCoinRain();
+          
+          // Auto close after 8 seconds
+          setTimeout(() => {
+            closeSuccessOverlay();
+          }, 8000);
+        }
+        
+        // Close success overlay
+        function closeSuccessOverlay() {
+          const successOverlay = document.getElementById('successOverlay');
+          successOverlay.classList.remove('active');
+          
+          // Clear any remaining coins
+          const coinRain = document.getElementById('coinRain');
+          coinRain.innerHTML = '';
+        }
+        
+        // Listen for payment success from iframe (x402)
+        window.addEventListener('message', function(event) {
+          // Check if message is from payment iframe
+          if (event.data && event.data.type === 'payment_success') {
+            showPaymentSuccess();
+          }
+        });
+        
+        // Simulate payment success for testing (remove in production)
+        // Uncomment to test coin rain: setTimeout(() => showPaymentSuccess(), 3000);
+        
+        // Test button for coin rain (temporary - remove before production)
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'c' && e.ctrlKey) {
+            showPaymentSuccess();
+          }
+        });
+      </script>
     </body>
     </html>
   `);
