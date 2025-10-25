@@ -26,7 +26,13 @@ NETWORK=base
 ADDRESS=0xda8d766bc482a7953b72283f56c12ce00da6a86a
 CDP_API_KEY_ID=your-api-key-id
 CDP_API_KEY_SECRET=your-api-key-secret
+BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
 ```
+
+> **⚠️ Önemli**: `BASE_RPC_URL` eklemezseniz public RPC kullanılır ve **rate limit** hatası alabilirsiniz!
+> - Ücretsiz Alchemy account oluşturun: https://www.alchemy.com/
+> - Base Mainnet için RPC URL alın
+> - `.env` dosyasına ekleyin
 
 3. Serveri çalıştır:
 ```bash
@@ -76,6 +82,7 @@ x402 middleware otomatik olarak şu UI'ı oluşturur:
 - `ADDRESS` - USDC alacak wallet adresi
 - `CDP_API_KEY_ID` - Coinbase Developer Platform API Key
 - `CDP_API_KEY_SECRET` - Coinbase Developer Platform API Secret
+- `BASE_RPC_URL` - **Custom RPC URL (Alchemy/Infura) - Rate limit sorunlarını önler!**
 
 ## Teknoloji
 

@@ -6,6 +6,7 @@ const isVercel = process.env.VERCEL === '1';
 const facilitatorUrl: string = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
 const payTo = (process.env.ADDRESS || '0xda8d766bc482a7953b72283f56c12ce00da6a86a') as `0x${string}`;
 const network = 'base'; // Always use Base network
+const rpcUrl = process.env.BASE_RPC_URL || 'https://base-mainnet.g.alchemy.com/v2/demo'; // Custom RPC to avoid rate limits
 
 const app = new Hono();
 
@@ -31,6 +32,7 @@ app.use(
       "GET /payment/test": {
         price: "$0.01",
         network: network,
+        rpcUrl: rpcUrl,
         config: {
           description: "🧪 TEST: Pay 0.01 USDC → Get 50 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -38,6 +40,7 @@ app.use(
       "GET /payment/1usdc": {
         price: "$1",
         network: network,
+        rpcUrl: rpcUrl,
         config: {
           description: "💰 Pay 1 USDC → Get 5,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -45,6 +48,7 @@ app.use(
       "GET /payment/5usdc": {
         price: "$5",
         network: network,
+        rpcUrl: rpcUrl,
         config: {
           description: "💎 Pay 5 USDC → Get 25,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -52,6 +56,7 @@ app.use(
       "GET /payment/10usdc": {
         price: "$10",
         network: network,
+        rpcUrl: rpcUrl,
         config: {
           description: "🚀 Pay 10 USDC → Get 50,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -59,6 +64,7 @@ app.use(
       "GET /payment/100usdc": {
         price: "$100",
         network: network,
+        rpcUrl: rpcUrl,
         config: {
           description: "🌟 Pay 100 USDC → Get 500,000 PAYX tokens (Best Value!). Tokens will be sent to your wallet later.",
         }
