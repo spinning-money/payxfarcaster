@@ -6,7 +6,6 @@ const isVercel = process.env.VERCEL === '1';
 const facilitatorUrl: string = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
 const payTo = (process.env.ADDRESS || '0xda8d766bc482a7953b72283f56c12ce00da6a86a') as `0x${string}`;
 const network = 'base'; // Always use Base network
-const rpcUrl = process.env.BASE_RPC_URL || 'https://base-mainnet.g.alchemy.com/v2/demo'; // Custom RPC to avoid rate limits
 
 const app = new Hono();
 
@@ -32,7 +31,6 @@ app.use(
       "GET /payment/test": {
         price: "$0.01",
         network: network,
-        rpcUrl: rpcUrl,
         config: {
           description: "🧪 TEST: Pay 0.01 USDC → Get 50 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -40,7 +38,6 @@ app.use(
       "GET /payment/1usdc": {
         price: "$1",
         network: network,
-        rpcUrl: rpcUrl,
         config: {
           description: "💰 Pay 1 USDC → Get 5,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -48,7 +45,6 @@ app.use(
       "GET /payment/5usdc": {
         price: "$5",
         network: network,
-        rpcUrl: rpcUrl,
         config: {
           description: "💎 Pay 5 USDC → Get 25,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -56,7 +52,6 @@ app.use(
       "GET /payment/10usdc": {
         price: "$10",
         network: network,
-        rpcUrl: rpcUrl,
         config: {
           description: "🚀 Pay 10 USDC → Get 50,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -64,7 +59,6 @@ app.use(
       "GET /payment/100usdc": {
         price: "$100",
         network: network,
-        rpcUrl: rpcUrl,
         config: {
           description: "🌟 Pay 100 USDC → Get 500,000 PAYX tokens (Best Value!). Tokens will be sent to your wallet later.",
         }
@@ -135,6 +129,26 @@ app.get("/payment/100usdc", (c) => {
   });
 });
 
+// Serve Farcaster manifest
+app.get("/.well-known/farcaster.json", (c) => {
+  return c.json({
+    "accountAssociation": {
+      "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MTIzNDU2Nzg5MGFiY2RlZjEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3OCJ9",
+      "payload": "eyJkb21haW4iOiJwYXl4ZmFyY2FzdGVyLnZlcmNlbC5hcHAifQ",
+      "signature": "MHhh..."
+    },
+    "frame": {
+      "version": "1",
+      "name": "PAYx Farcaster",
+      "iconUrl": "https://payxfarcaster.vercel.app/favicon.png",
+      "splashImageUrl": "https://payxfarcaster.vercel.app/favicon.png",
+      "splashBackgroundColor": "#000814",
+      "homeUrl": "https://payxfarcaster.vercel.app",
+      "webhookUrl": "https://payxfarcaster.vercel.app/api/webhook"
+    }
+  });
+});
+
 // Simple info page with links to protected endpoints
 app.get("/", (c) => {
   // Vercel optimization - faster response
@@ -154,12 +168,18 @@ app.get("/", (c) => {
         <link rel="shortcut icon" type="image/png" href="/favicon.png">
         <link rel="apple-touch-icon" href="/favicon.png">
         
-        <!-- Farcaster Frame Metadata -->
-        <meta property="fc:frame" content="vNext">
-        <meta property="fc:frame:image" content="https://payxfarcaster.vercel.app/favicon.png">
-        <meta property="fc:frame:button:1" content="Buy PAYX 💰">
-        <meta property="fc:frame:button:1:action" content="link">
-        <meta property="fc:frame:button:1:target" content="https://payxfarcaster.vercel.app">
+        <!-- Farcaster Mini App Embed Metadata -->
+        <meta property="fc:miniapp" content="vNext">
+        <meta property="fc:miniapp:image" content="https://payxfarcaster.vercel.app/favicon.png">
+        <meta property="fc:miniapp:button:1" content="Buy PAYX Tokens">
+        <meta property="fc:miniapp:button:1:action" content="launch_frame">
+        <meta property="fc:miniapp:button:1:target" content="https://payxfarcaster.vercel.app">
+        
+        <!-- Open Graph for general sharing -->
+        <meta property="og:title" content="PAYx Farcaster - Buy PAYX Tokens">
+        <meta property="og:description" content="Buy PAYX tokens with USDC using x402 protocol on Base Mainnet">
+        <meta property="og:image" content="https://payxfarcaster.vercel.app/favicon.png">
+        <meta property="og:url" content="https://payxfarcaster.vercel.app">
         
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -487,7 +507,7 @@ app.get("/", (c) => {
               if (context.user && context.user.displayName) {
                 const welcomeMsg = document.createElement('div');
                 welcomeMsg.style.cssText = 'position: fixed; top: 10px; right: 10px; background: #0052FF; color: white; padding: 10px 20px; border-radius: 8px; font-size: 10px; z-index: 99999; box-shadow: 0 4px 8px rgba(0,0,0,0.3);';
-                welcomeMsg.textContent = `👋 Welcome ${context.user.displayName}!`;
+                welcomeMsg.textContent = '👋 Welcome ' + context.user.displayName + '!';
                 document.body.appendChild(welcomeMsg);
                 
                 // Remove after 5 seconds

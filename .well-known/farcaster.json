@@ -1,0 +1,17 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MTIzNDU2Nzg5MGFiY2RlZjEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3OCJ9",
+    "payload": "eyJkb21haW4iOiJwYXl4ZmFyY2FzdGVyLnZlcmNlbC5hcHAifQ",
+    "signature": "MHhh..."
+  },
+  "frame": {
+    "version": "1",
+    "name": "PAYx Farcaster",
+    "iconUrl": "https://payxfarcaster.vercel.app/favicon.png",
+    "splashImageUrl": "https://payxfarcaster.vercel.app/favicon.png",
+    "splashBackgroundColor": "#000814",
+    "homeUrl": "https://payxfarcaster.vercel.app",
+    "webhookUrl": "https://payxfarcaster.vercel.app/api/webhook"
+  }
+}
+
