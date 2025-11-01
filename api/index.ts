@@ -545,11 +545,11 @@ app.get("/", (c) => {
           </a>
         </div>
         
-        <a href="#" onclick="openPaymentModal('/payment/5usdc', '💎 5 USDC Payment'); return false;">5 USDC → 100,000 PAYX</a>
-        <a href="#" onclick="openPaymentModal('/payment/10usdc', '🚀 10 USDC Payment'); return false;">10 USDC → 200,000 PAYX</a>
-        <a href="#" onclick="openPaymentModal('/payment/100usdc', '🌟 100 USDC Payment', 'premium'); return false;">100 USDC → 2,000,000 PAYX</a>
+        <a href="/payment/5usdc">5 USDC → 100,000 PAYX</a>
+        <a href="/payment/10usdc">10 USDC → 200,000 PAYX</a>
+        <a href="/payment/100usdc">100 USDC → 2,000,000 PAYX</a>
         
-        <a href="#" onclick="openPaymentModal('/payment/test', '🧪 Test Payment', 'test'); return false;" class="test-button">0.01 USDC → 50 PAYX</a>
+        <a href="/payment/test" class="test-button">0.01 USDC → 50 PAYX</a>
         
         <div class="info">
           <p><strong>Token Information:</strong></p>
