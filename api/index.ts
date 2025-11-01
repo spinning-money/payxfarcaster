@@ -549,11 +549,11 @@ app.get("/", (c) => {
           </a>
         </div>
         
-        <a href="#" onclick="openPaymentModal('/payment/5usdc', '💎 5 USDC Payment'); return false;">5 USDC → 100,000 PAYX</a>
-        <a href="#" onclick="openPaymentModal('/payment/10usdc', '🚀 10 USDC Payment'); return false;">10 USDC → 200,000 PAYX</a>
-        <a href="#" onclick="openPaymentModal('/payment/100usdc', '🌟 100 USDC Payment', 'premium'); return false;">100 USDC → 2,000,000 PAYX</a>
+        <a href="#" onclick="handlePaymentClick('/payment/5usdc', '💎 5 USDC Payment'); return false;">5 USDC → 100,000 PAYX</a>
+        <a href="#" onclick="handlePaymentClick('/payment/10usdc', '🚀 10 USDC Payment'); return false;">10 USDC → 200,000 PAYX</a>
+        <a href="#" onclick="handlePaymentClick('/payment/100usdc', '🌟 100 USDC Payment', 'premium'); return false;">100 USDC → 2,000,000 PAYX</a>
         
-        <a href="#" onclick="openPaymentModal('/payment/test', '🧪 Test Payment', 'test'); return false;" class="test-button">0.01 USDC → 50 PAYX</a>
+        <a href="#" onclick="handlePaymentClick('/payment/test', '🧪 Test Payment', 'test'); return false;" class="test-button">0.01 USDC → 50 PAYX</a>
         
         <div class="info">
           <p><strong>Token Information:</strong></p>
@@ -818,29 +818,31 @@ app.get("/", (c) => {
           // Open in new tab
           window.open(url, '_blank');
         }
+        
+        // Handle payment click - use x402-fetch in Farcaster, iframe for web
+        function handlePaymentClick(url, title, type) {
+          // Check if we're in Farcaster and x402-fetch is ready
+          if (window.isFarcaster && window.fetchWithPayment) {
+            console.log('🎯 Using x402-fetch for Farcaster payment');
+            window.makePayment(url, title, type);
+          } else {
+            console.log('🎯 Using iframe modal for web payment');
+            openPaymentModal(url, title, type);
+          }
+        }
       </script>
       
-      <!-- Farcaster Mini App SDK + Wallet -->
+      <!-- Farcaster Mini App SDK + x402-fetch -->
       <script type="module">
         import { sdk } from "https://esm.sh/@farcaster/miniapp-sdk";
-        import { createConfig, http } from "https://esm.sh/wagmi";
-        import { base } from "https://esm.sh/wagmi/chains";
-        import { farcasterMiniApp } from "https://esm.sh/@farcaster/miniapp-wagmi-connector";
+        import { createWalletClient, custom } from "https://esm.sh/viem";
+        import { base } from "https://esm.sh/viem/chains";
+        import { wrapFetchWithPayment } from "https://esm.sh/x402-fetch";
         
         window.farcasterSDK = sdk;
-        
-        // Wagmi configuration for Farcaster wallet
-        const config = createConfig({
-          chains: [base],
-          transports: {
-            [base.id]: http(),
-          },
-          connectors: [
-            farcasterMiniApp()
-          ]
-        });
-        
-        window.wagmiConfig = config;
+        window.isFarcaster = false;
+        window.walletClient = null;
+        window.fetchWithPayment = null;
         
         // Initialize SDK when page loads
         window.addEventListener('DOMContentLoaded', async () => {
@@ -850,7 +852,7 @@ app.get("/", (c) => {
             
             if (context) {
               console.log('🎉 Running in Farcaster Mini App!');
-              console.log('User:', context.user);
+              window.isFarcaster = true;
               
               // Show welcome message with Farcaster username
               if (context.user && context.user.displayName) {
@@ -883,135 +885,58 @@ app.get("/", (c) => {
           }
         });
         
-        // Farcaster wallet initialization
+        // Farcaster wallet initialization with x402-fetch
         async function initializeFarcasterWallet() {
           try {
+            console.log('🔗 Initializing Farcaster wallet...');
+            
             // Get Ethereum provider from Farcaster SDK
             const provider = await sdk.wallet.getEthereumProvider();
             
-            if (provider) {
-              console.log('🔗 Farcaster wallet connected!');
-              
-              // Get wallet address
-              const accounts = await provider.request({ method: 'eth_accounts' });
-              if (accounts && accounts.length > 0) {
-                const address = accounts[0];
-                console.log('💰 Wallet address:', address);
-                
-                // Show wallet status
-                showWalletStatus(address);
-                
-                // Store provider globally for x402 integration
-                window.farcasterProvider = provider;
-                window.farcasterAddress = address;
-                
-                // Override x402 wallet selection with Farcaster wallet
-                overrideX402WalletSelection();
-              }
-            } else {
-              console.log('❌ No Farcaster wallet available');
+            if (!provider) {
+              console.log('❌ No Farcaster wallet provider available');
+              return;
             }
+            
+            console.log('✅ Farcaster provider obtained');
+            
+            // Get wallet address from provider first
+            const accounts = await provider.request({ method: 'eth_accounts' });
+            if (!accounts || accounts.length === 0) {
+              console.log('⚠️ No accounts found');
+              return;
+            }
+            
+            const address = accounts[0];
+            console.log('💰 Wallet address:', address);
+            
+            // Show wallet status
+            showWalletStatus(address);
+            
+            // Create viem wallet client from Farcaster provider
+            const client = createWalletClient({
+              chain: base,
+              transport: custom(provider)
+            });
+            
+            window.walletClient = client;
+            console.log('✅ Viem wallet client created');
+            
+            // Create x402-fetch wrapper
+            // 100 USDC = 100 * 10^6 (USDC has 6 decimals)
+            const MAX_PAYMENT_AMOUNT = BigInt(100000000); // 100 USDC max
+            
+            window.fetchWithPayment = wrapFetchWithPayment(
+              fetch,
+              client,
+              MAX_PAYMENT_AMOUNT
+            );
+            
+            console.log('✅ x402-fetch wrapper ready');
           } catch (error) {
-            console.log('❌ Wallet connection failed:', error);
+            console.error('❌ Wallet initialization failed:', error);
           }
         }
-        
-        // Override x402 wallet selection to use Farcaster wallet
-        function overrideX402WalletSelection() {
-          // Wait for x402 iframe to load, then inject Farcaster wallet
-          const checkForX402 = setInterval(() => {
-            const iframe = document.getElementById('paymentIframe');
-            if (iframe && iframe.contentDocument) {
-              try {
-                // Check if x402 paywall is loaded
-                const x402Doc = iframe.contentDocument;
-                const walletButtons = x402Doc.querySelectorAll('button, [role="button"]');
-                
-                if (walletButtons.length > 0) {
-                  console.log('🎯 x402 paywall detected, injecting Farcaster wallet...');
-                  
-                  // Inject Farcaster wallet into x402 iframe
-                  injectFarcasterWalletIntoX402(x402Doc);
-                  
-                  clearInterval(checkForX402);
-                }
-              } catch (e) {
-                // Cross-origin restriction - that's expected
-                console.log('⏳ Waiting for x402 iframe to load...');
-              }
-            }
-          }, 500);
-          
-          // Stop checking after 10 seconds
-          setTimeout(() => clearInterval(checkForX402), 10000);
-        }
-        
-        // Inject Farcaster wallet into x402 iframe
-        function injectFarcasterWalletIntoX402(x402Doc) {
-          try {
-            // Create Farcaster wallet button
-            const farcasterButton = x402Doc.createElement('div');
-            farcasterButton.innerHTML = \`
-              <div style="
-                background: #0052FF;
-                color: white;
-                padding: 15px;
-                margin: 10px;
-                border-radius: 8px;
-                cursor: pointer;
-                text-align: center;
-                font-family: 'Press Start 2P', monospace;
-                font-size: 12px;
-                border: 2px solid #000;
-                box-shadow: 4px 4px 0px #000;
-              " onclick="window.parent.connectFarcasterWallet()">
-                🔗 Connect Farcaster Wallet
-              </div>
-            \`;
-            
-            // Insert at the top of wallet selection
-            const walletContainer = x402Doc.querySelector('[class*="wallet"], [class*="connect"], [class*="button"]') || x402Doc.body;
-            if (walletContainer) {
-              walletContainer.insertBefore(farcasterButton.firstChild, walletContainer.firstChild);
-            }
-            
-            console.log('✅ Farcaster wallet button injected into x402');
-          } catch (error) {
-            console.log('❌ Failed to inject Farcaster wallet:', error);
-          }
-        }
-        
-        // Connect Farcaster wallet (called from x402 iframe)
-        window.connectFarcasterWallet = async function() {
-          try {
-            if (!window.farcasterProvider) {
-              throw new Error('Farcaster wallet not available');
-            }
-            
-            // Set the provider in the x402 iframe
-            const iframe = document.getElementById('paymentIframe');
-            if (iframe && iframe.contentWindow) {
-              iframe.contentWindow.ethereum = window.farcasterProvider;
-              iframe.contentWindow.web3 = { currentProvider: window.farcasterProvider };
-            }
-            
-            console.log('🔗 Farcaster wallet connected to x402');
-            
-            // Trigger x402 payment flow
-            const iframeDoc = iframe.contentDocument;
-            if (iframeDoc) {
-              // Find and click the first wallet button to proceed
-              const proceedButton = iframeDoc.querySelector('button, [role="button"]');
-              if (proceedButton) {
-                proceedButton.click();
-              }
-            }
-            
-          } catch (error) {
-            console.error('❌ Farcaster wallet connection failed:', error);
-            alert('Failed to connect Farcaster wallet: ' + error.message);
-          }
-        };
         
         // Show wallet connection status
         function showWalletStatus(address) {
@@ -1023,6 +948,69 @@ app.get("/", (c) => {
           // Remove after 5 seconds
           setTimeout(() => walletStatus.remove(), 5000);
         }
+        
+        // Make x402 payment using fetchWithPayment
+        window.makePayment = async function(url, title, type) {
+          try {
+            console.log('🚀 Starting x402 payment flow...');
+            console.log('URL:', url);
+            console.log('Title:', title);
+            console.log('Type:', type);
+            
+            if (!window.fetchWithPayment) {
+              throw new Error('Wallet not connected. Please ensure you are in Farcaster.');
+            }
+            
+            // Set title and type
+            const modalContent = document.getElementById('modalContent');
+            const modalTitle = document.getElementById('modalTitle');
+            
+            modalTitle.textContent = title || 'Payment';
+            modalContent.className = 'modal-content';
+            if (type === 'test') {
+              modalContent.classList.add('test');
+            } else if (type === 'premium') {
+              modalContent.classList.add('premium');
+            }
+            
+            // Show loading modal
+            document.getElementById('paymentModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Make payment request using x402-fetch
+            const response = await window.fetchWithPayment(url, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+            
+            console.log('📥 Response received:', {
+              status: response.status,
+              statusText: response.statusText,
+              ok: response.ok,
+            });
+            
+            if (!response.ok) {
+              throw new Error(\`Payment failed: \${response.status} \${response.statusText}\`);
+            }
+            
+            const result = await response.json();
+            console.log('✅ Payment successful:', result);
+            
+            // Show success overlay
+            showPaymentSuccess();
+            
+            return result;
+          } catch (error) {
+            console.error('❌ Payment error:', error);
+            alert('Payment failed: ' + error.message);
+            
+            // Close modal
+            document.getElementById('paymentModal').classList.remove('active');
+            document.body.style.overflow = '';
+          }
+        };
       </script>
     </body>
     </html>
