@@ -32,7 +32,6 @@ app.use(
       "GET /payment/test": {
         price: "$0.01",
         network: network,
-        rpcUrl: rpcUrl,
         config: {
           description: "🧪 TEST: Pay 0.01 USDC → Get 50 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -40,7 +39,6 @@ app.use(
       "GET /payment/5usdc": {
         price: "$5",
         network: network,
-        rpcUrl: rpcUrl,
         config: {
           description: "💎 Pay 5 USDC → Get 100,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -48,7 +46,6 @@ app.use(
       "GET /payment/10usdc": {
         price: "$10",
         network: network,
-        rpcUrl: rpcUrl,
         config: {
           description: "🚀 Pay 10 USDC → Get 200,000 PAYX tokens. Tokens will be sent to your wallet later.",
         }
@@ -56,7 +53,6 @@ app.use(
       "GET /payment/100usdc": {
         price: "$100",
         network: network,
-        rpcUrl: rpcUrl,
         config: {
           description: "🌟 Pay 100 USDC → Get 2,000,000 PAYX tokens (Best Value!). Tokens will be sent to your wallet later.",
         }
