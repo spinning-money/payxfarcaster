@@ -648,8 +648,28 @@ app.get("/", (c) => {
           // Prevent body scroll
           document.body.style.overflow = 'hidden';
           
+          // Inject Farcaster wallet provider into iframe when it loads
+          setTimeout(() => {
+            injectProviderIntoIframe(iframe);
+          }, 500);
+          
           // Start monitoring for payment success
           setTimeout(() => startPaymentMonitoring(), 1000);
+        }
+        
+        // Inject Farcaster provider into iframe for x402 payment
+        function injectProviderIntoIframe(iframe) {
+          if (window.farcasterProvider) {
+            try {
+              iframe.contentWindow.ethereum = window.farcasterProvider;
+              iframe.contentWindow.web3 = { currentProvider: window.farcasterProvider };
+              console.log('✅ Farcaster wallet injected into iframe');
+            } catch (e) {
+              console.log('⚠️ Cross-origin iframe, provider already set globally');
+            }
+          } else {
+            console.log('⚠️ No Farcaster provider available');
+          }
         }
         
         function closePaymentModal() {
@@ -884,6 +904,7 @@ app.get("/", (c) => {
                 // Set provider as the default Ethereum provider for x402
                 // This makes x402 automatically use Farcaster wallet
                 window.ethereum = provider;
+                window.farcasterProvider = provider; // Store for iframe injection
                 
                 console.log('✅ Farcaster wallet set as default Ethereum provider');
               }
