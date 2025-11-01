@@ -1,28 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { WagmiProvider, createConfig, http, useWalletClient, useAccount } from 'wagmi'
-import { base } from 'wagmi/chains'
+import { WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { injected, walletConnect } from 'wagmi/connectors'
 import PaymentButtons from './PaymentButtons'
-
-// Check if we're in Farcaster
-function isInFarcaster(): boolean {
-  return typeof window !== 'undefined' && 
-         (window.location.href.includes('farcaster') || 
-          window.location.href.includes('warpcast') ||
-          !!document.querySelector('[data-farcaster]'))
-}
-
-// Wagmi configuration
-const config = createConfig({
-  chains: [base],
-  connectors: [
-    injected({ shimDisconnect: true }),
-  ],
-  transports: {
-    [base.id]: http(),
-  },
-})
+import { config, isInFarcaster } from './config/wagmi'
 
 const queryClient = new QueryClient()
 
