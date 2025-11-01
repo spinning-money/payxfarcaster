@@ -863,7 +863,7 @@ app.get("/", (c) => {
           }
         });
         
-        // Farcaster wallet initialization
+        // Farcaster wallet initialization - simple approach
         async function initializeFarcasterWallet() {
           try {
             // Get Ethereum provider from Farcaster SDK
@@ -881,12 +881,11 @@ app.get("/", (c) => {
                 // Show wallet status
                 showWalletStatus(address);
                 
-                // Store provider globally for x402 integration
-                window.farcasterProvider = provider;
-                window.farcasterAddress = address;
+                // Set provider as the default Ethereum provider for x402
+                // This makes x402 automatically use Farcaster wallet
+                window.ethereum = provider;
                 
-                // Override x402 wallet selection with Farcaster wallet
-                overrideX402WalletSelection();
+                console.log('✅ Farcaster wallet set as default Ethereum provider');
               }
             } else {
               console.log('❌ No Farcaster wallet available');
@@ -896,108 +895,11 @@ app.get("/", (c) => {
           }
         }
         
-        // Override x402 wallet selection to use Farcaster wallet
-        function overrideX402WalletSelection() {
-          // Wait for x402 iframe to load, then inject Farcaster wallet
-          const checkForX402 = setInterval(() => {
-            const iframe = document.getElementById('paymentIframe');
-            if (iframe && iframe.contentDocument) {
-              try {
-                // Check if x402 paywall is loaded
-                const x402Doc = iframe.contentDocument;
-                const walletButtons = x402Doc.querySelectorAll('button, [role="button"]');
-                
-                if (walletButtons.length > 0) {
-                  console.log('🎯 x402 paywall detected, injecting Farcaster wallet...');
-                  
-                  // Inject Farcaster wallet into x402 iframe
-                  injectFarcasterWalletIntoX402(x402Doc);
-                  
-                  clearInterval(checkForX402);
-                }
-              } catch (e) {
-                // Cross-origin restriction - that's expected
-                console.log('⏳ Waiting for x402 iframe to load...');
-              }
-            }
-          }, 500);
-          
-          // Stop checking after 10 seconds
-          setTimeout(() => clearInterval(checkForX402), 10000);
-        }
-        
-        // Inject Farcaster wallet into x402 iframe
-        function injectFarcasterWalletIntoX402(x402Doc) {
-          try {
-            // Create Farcaster wallet button
-            const farcasterButton = x402Doc.createElement('div');
-            farcasterButton.innerHTML = \`
-              <div style="
-                background: #0052FF;
-                color: white;
-                padding: 15px;
-                margin: 10px;
-                border-radius: 8px;
-                cursor: pointer;
-                text-align: center;
-                font-family: 'Press Start 2P', monospace;
-                font-size: 12px;
-                border: 2px solid #000;
-                box-shadow: 4px 4px 0px #000;
-              " onclick="window.parent.connectFarcasterWallet()">
-                🔗 Connect Farcaster Wallet
-              </div>
-            \`;
-            
-            // Insert at the top of wallet selection
-            const walletContainer = x402Doc.querySelector('[class*="wallet"], [class*="connect"], [class*="button"]') || x402Doc.body;
-            if (walletContainer) {
-              walletContainer.insertBefore(farcasterButton.firstChild, walletContainer.firstChild);
-            }
-            
-            console.log('✅ Farcaster wallet button injected into x402');
-          } catch (error) {
-            console.log('❌ Failed to inject Farcaster wallet:', error);
-          }
-        }
-        
-        // Connect Farcaster wallet (called from x402 iframe)
-        window.connectFarcasterWallet = async function() {
-          try {
-            if (!window.farcasterProvider) {
-              throw new Error('Farcaster wallet not available');
-            }
-            
-            // Set the provider in the x402 iframe
-            const iframe = document.getElementById('paymentIframe');
-            if (iframe && iframe.contentWindow) {
-              iframe.contentWindow.ethereum = window.farcasterProvider;
-              iframe.contentWindow.web3 = { currentProvider: window.farcasterProvider };
-            }
-            
-            console.log('🔗 Farcaster wallet connected to x402');
-            
-            // Trigger x402 payment flow
-            const iframeDoc = iframe.contentDocument;
-            if (iframeDoc) {
-              // Find and click the first wallet button to proceed
-              const proceedButton = iframeDoc.querySelector('button, [role="button"]');
-              if (proceedButton) {
-                proceedButton.click();
-              }
-            }
-            
-          } catch (error) {
-            console.error('❌ Farcaster wallet connection failed:', error);
-            alert('Failed to connect Farcaster wallet: ' + error.message);
-          }
-        };
-        
         // Show wallet connection status
         function showWalletStatus(address) {
           const walletStatus = document.createElement('div');
           walletStatus.style.cssText = 'position: fixed; top: 10px; left: 10px; background: #2ecc71; color: white; padding: 8px 16px; border-radius: 8px; font-size: 10px; z-index: 99999; box-shadow: 0 4px 8px rgba(0,0,0,0.3);';
-          walletStatus.textContent = '🔗 Wallet: ' + address.slice(0, 6) + '...' + address.slice(-4);
+          walletStatus.textContent = '🔗 Farcaster Wallet: ' + address.slice(0, 6) + '...' + address.slice(-4);
           document.body.appendChild(walletStatus);
           
           // Remove after 5 seconds
