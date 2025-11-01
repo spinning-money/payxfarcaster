@@ -157,6 +157,38 @@ app.get("/public/PAYX-Logo.png", async (c) => {
   }
 });
 
+// Serve static assets from public folder
+app.get("/assets/*", async (c) => {
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const requestedPath = c.req.path.replace('/assets/', '');
+    const filePath = path.join(process.cwd(), 'public', 'assets', requestedPath);
+    const fileBuffer = fs.readFileSync(filePath);
+    
+    // Determine content type based on file extension
+    const ext = path.extname(filePath);
+    const contentTypeMap: Record<string, string> = {
+      '.js': 'application/javascript',
+      '.css': 'text/css',
+      '.json': 'application/json',
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.svg': 'image/svg+xml',
+    };
+    const contentType = contentTypeMap[ext] || 'application/octet-stream';
+    
+    return new Response(fileBuffer, {
+      headers: {
+        "Content-Type": contentType,
+        "Cache-Control": "public, max-age=31536000"
+      }
+    });
+  } catch (error) {
+    return c.text("Asset not found", 404);
+  }
+});
+
 // Simple info page with links to protected endpoints
 app.get("/", (c) => {
   // Vercel optimization - faster response
