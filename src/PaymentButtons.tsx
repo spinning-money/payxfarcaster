@@ -1,9 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useConnect, useAccount } from 'wagmi'
 import { useX402Payment } from './hooks/useX402Payment'
 
 const PaymentButtons = () => {
-  const { makePayment, isLoading, error, isConnected } = useX402Payment()
+  const { connect, connectors } = useConnect()
+  const { isConnected } = useAccount()
+  const { makePayment, isLoading, error } = useX402Payment()
   const [selectedPayment, setSelectedPayment] = React.useState<string | null>(null)
+
+  // Auto-connect if in Farcaster and not connected
+  useEffect(() => {
+    if (!isConnected && connectors.length > 0) {
+      const farcasterConnector = connectors.find(c => c.id === 'farcaster')
+      if (farcasterConnector) {
+        connect({ connector: farcasterConnector })
+      }
+    }
+  }, [isConnected, connectors, connect])
 
   const handlePayment = async (endpoint: string) => {
     try {
